@@ -10,7 +10,21 @@ var dbconfig = require('./config.js');
 
 // configuration =================
 
-mongoose.connect(dbconfig.uri);     // connect to mongoDB database on modulus.io
+mongoose.connect(dbconfig.uri, function(err) {
+    console.log('sdssd');
+
+    mongoose.connection.db.collectionNames(function (err, names) {
+        if (err) console.log(err);
+        else console.log(names);
+    });
+
+    
+    if (err) {
+        console.err(err);
+    } else {
+        console.log('Connected');
+    }    
+});     // connect to mongoDB database on modulus.io
 
 app.use(express.static(__dirname + '/public'));                 // set the static files location /public/img will be /img for users
 app.use(morgan('dev'));                                         // log every request to the console
@@ -30,21 +44,27 @@ var List = mongoose.model('List', {
     // get all todos
     app.get('/api/list', function(req, res) {
 
-        // use mongoose to get all todos in the database
-        List.find(function(err, todos) {
+        console.log('1. List', List);
+
+        // use mongoose to get all lists in the database
+        List.find(function(err, lists) {
+
+            console.log('2. lists', lists);
 
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
                 res.send(err)
 
-            res.json(todos); // return all todos in JSON format
+            res.json(lists); // return all todos in JSON format
         });
     });
 
-    // create todo and send back all todos after creation
+    // create todo and send back all lists after creation
     app.post('/api/list', function(req, res) {
 
-        // create a todo, information comes from AJAX request from Angular
+        console.log(req.body);
+
+        // create a list, information comes from AJAX request from Angular
         List.create({
             text : req.body.text,
             done : false
@@ -52,7 +72,7 @@ var List = mongoose.model('List', {
             if (err)
                 res.send(err);
 
-            // get and return all the todos after you create another
+            // get and return all the lists after you create another
             Todo.find(function(err, todos) {
                 if (err)
                     res.send(err)
