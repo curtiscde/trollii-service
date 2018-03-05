@@ -12,7 +12,7 @@ var dbconfig = require('./config.js');
 
 mongoose.connect(dbconfig.uri)
 .then(function(r){
-    console.log('sdsd');
+    console.log('DB connected');
 })
 .catch(console.log);;     // connect to mongoDB database on modulus.io
 
