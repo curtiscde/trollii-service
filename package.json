@@ -1,6 +1,6 @@
 {
   "name": "trollii-service",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "server.js",
   "scripts": {
@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/curttimson/trollii-service/issues"
   },
-  "homepage": "https://github.com/curttimson/trollii-service#readme"
+  "homepage": "https://github.com/curttimson/trollii-service#readme",
+  "dependencies": {
+    "express"    : "~4.7.2",
+    "mongoose"   : "~3.6.2",
+    "morgan"     : "~1.2.2",
+    "body-parser": "~1.5.2",
+    "method-override": "~2.1.2"
+  }
 }
