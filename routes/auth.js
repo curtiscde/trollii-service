@@ -24,11 +24,15 @@ module.exports = function(app, passport){
         failureFlash : true // allow flash messages
     }));
 
+    app.get('/api/auth/logout', function(req, res) {
+        req.logout();
+        res.send(true);
+	});
+
     app.get('/api/auth/profile', function(req, res) {
-		// res.render('profile.ejs', {
-		// 	user : req.user // get the user out of session and pass to template
-        // });
-        console.log(req.isAuthenticated());
+        if (!req.user){
+            res.status(500).send('Not logged in');
+        }
         res.send(req.user);
 	});
     
