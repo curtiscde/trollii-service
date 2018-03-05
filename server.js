@@ -6,11 +6,11 @@ var morgan = require('morgan');             // log requests to the console (expr
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
 var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
 
-var dbconfig = require('./config.js');
+var dbconfig = require('./config/database.js');
 
 // configuration =================
 
-mongoose.connect(dbconfig.uri)
+mongoose.connect(dbconfig.url)
 .then(function(r){
     console.log('DB connected');
 })
