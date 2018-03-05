@@ -10,21 +10,11 @@ var dbconfig = require('./config.js');
 
 // configuration =================
 
-mongoose.connect(dbconfig.uri, function(err) {
-    console.log('sdssd');
-
-    mongoose.connection.db.collectionNames(function (err, names) {
-        if (err) console.log(err);
-        else console.log(names);
-    });
-
-    
-    if (err) {
-        console.err(err);
-    } else {
-        console.log('Connected');
-    }    
-});     // connect to mongoDB database on modulus.io
+mongoose.connect(dbconfig.uri)
+.then(function(r){
+    console.log('sdsd');
+})
+.catch(console.log);;     // connect to mongoDB database on modulus.io
 
 app.use(express.static(__dirname + '/public'));                 // set the static files location /public/img will be /img for users
 app.use(morgan('dev'));                                         // log every request to the console
