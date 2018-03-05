@@ -44,16 +44,16 @@ module.exports = function(app){
     // delete a todo
     app.delete('/api/list/:list_id', function(req, res) {
         List.remove({
-            _id : req.params.todo_id
-        }, function(err, todo) {
+            _id : req.params.list_id
+        }, function(err, list) {
             if (err)
                 res.send(err);
 
             // get and return all the todos after you create another
-            Todo.find(function(err, todos) {
+            List.find(function(err, lists) {
                 if (err)
                     res.send(err)
-                res.json(todos);
+                res.json(lists);
             });
         });
     });
