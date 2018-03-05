@@ -1,7 +1,7 @@
 var mongoose = require('mongoose'); 
 
 var List = mongoose.model('List', {
-    text : String
+    name : String
 });
 
 module.exports = function(app){
@@ -18,26 +18,30 @@ module.exports = function(app){
         });
     });
 
-    // create todo and send back all lists after creation
+    // create list and send back all lists after creation
     app.post('/api/list', function(req, res) {
 
-        console.log(req.body);
+        if (!req.body.name){
+            res.status(500).send({ error: 'Name cannot be blank' });
+        }
+        else{
 
-        // create a list, information comes from AJAX request from Angular
-        List.create({
-            text : req.body.text,
-            done : false
-        }, function(err, todo) {
-            if (err)
-                res.send(err);
-
-            // get and return all the lists after you create another
-            List.find(function(err, todos) {
+            List.create({
+                name : req.body.name,
+                done : false
+            }, function(err, todo) {
                 if (err)
-                    res.send(err)
-                res.json(todos);
+                    res.send(err);
+
+                // get and return all the lists after you create another
+                List.find(function(err, todos) {
+                    if (err)
+                        res.send(err)
+                    res.json(todos);
+                });
             });
-        });
+
+        }
 
     });
 
@@ -49,7 +53,7 @@ module.exports = function(app){
             if (err)
                 res.send(err);
 
-            // get and return all the todos after you create another
+            // get and return all the lists after you delete another
             List.find(function(err, lists) {
                 if (err)
                     res.send(err)
