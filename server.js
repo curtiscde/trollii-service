@@ -33,19 +33,13 @@ var List = mongoose.model('List', {
 // api ---------------------------------------------------------------------
     // get all todos
     app.get('/api/list', function(req, res) {
-
-        console.log('1. List', List);
-
         // use mongoose to get all lists in the database
         List.find(function(err, lists) {
-
-            console.log('2. lists', lists);
-
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
                 res.send(err)
 
-            res.json(lists); // return all todos in JSON format
+            res.json(lists); // return all lists in JSON format
         });
     });
 
@@ -63,7 +57,7 @@ var List = mongoose.model('List', {
                 res.send(err);
 
             // get and return all the lists after you create another
-            Todo.find(function(err, todos) {
+            List.find(function(err, todos) {
                 if (err)
                     res.send(err)
                 res.json(todos);
