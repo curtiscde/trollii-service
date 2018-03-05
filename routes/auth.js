@@ -19,9 +19,17 @@ module.exports = function(app, passport){
     });
 
     app.post('/api/auth/login', passport.authenticate('local-login', {
-        successRedirect : '/profile', // redirect to the secure profile section
+        successRedirect : '/api/auth/profile', // redirect to the secure profile section
         failureRedirect : '/login', // redirect back to the signup page if there is an error
         failureFlash : true // allow flash messages
     }));
+
+    app.get('/api/auth/profile', function(req, res) {
+		// res.render('profile.ejs', {
+		// 	user : req.user // get the user out of session and pass to template
+        // });
+        console.log(req.isAuthenticated());
+        res.send(req.user);
+	});
     
 };
