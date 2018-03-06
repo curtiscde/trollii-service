@@ -46,8 +46,10 @@ module.exports = function(app){
 
     // delete a list
     app.delete('/api/list/:list_id', function(req, res) {
+
         List.remove({
-            _id : req.params.list_id
+            _id : req.params.list_id,
+            userid: req.user._id
         }, function(err, list) {
             if (err)
                 res.send(err);
