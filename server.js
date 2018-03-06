@@ -36,6 +36,7 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 // routes
 require('./routes/auth.js')(app, passport);
 require('./routes/list.js')(app);
+require('./routes/item.js')(app);
 
 
 app.listen(8080);
