@@ -1,50 +1,68 @@
 var mongoose = require('mongoose'); 
 
-var Item = mongoose.model('Item', {
-    listid: String,
-    userid: String,
-    name : String
-});
+var Item = require('../models/item');
+var List = require('../models/list');
 
 module.exports = function(app){
 
-    app.get('/api/item/:listid', function(req, res) {
-        // use mongoose to get all lists in the database
+    app.get('/api/item/:listid', isLoggedIn, function(req, res) {
 
-        if (!req.isAuthenticated()){
-            res.status(500).send({ error: 'Not logged in'});
-        }
-        else{
+        checkUserHasListAccess(req.params.listid, req.user._id, function(err, hasAccess){
 
-            Item.find(function(err, items) {
-                if (err)
-                    res.send(err)
-                res.json(getItems(items, req.params.listid));
-            });
+            if (err)
+                res.send(err)
 
-        }
+            if (!hasAccess){
+                res.status(500).send({ error: 'Access Denied'});
+            }
+            else {
+
+                Item.find(function(err, items) {
+                    if (err)
+                        res.send(err)
+                    res.json(getItems(items, req.params.listid));
+                });
+
+            }
+
+        });
+        
     });
 
-    app.post('/api/item', function(req, res) {
+    app.post('/api/item', isLoggedIn, function(req, res) {
 
         if (!req.body.listid || !req.body.name){
             res.status(500).send({ error: 'listid and name cannot be blank' });
         }
         else{
 
-            Item.create({
-                listid: req.body.listid,
-                name : req.body.name,
-                userid: req.user._id
-            }, function(err, items) {
-                if (err)
-                    res.send(err);
+            checkUserHasListAccess(req.body.listid, req.user._id, function(err, hasAccess){
 
-                Item.find(function(err, items) {
-                    if (err)
-                        res.send(err)
-                    res.json(getItems(items, req.body.listid));
-                });
+                if (err)
+                    res.send(err)
+
+                if (!hasAccess){
+                    res.status(500).send({ error: 'Access Denied'});
+                }
+                else {
+
+                    Item.create({
+                        listid: req.body.listid,
+                        name : req.body.name,
+                        userid: req.user._id
+                    }, function(err, items) {
+                        if (err)
+                            res.send(err);
+
+                        Item.find(function(err, items) {
+                            if (err)
+                                res.send(err)
+                            res.json(getItems(items, req.body.listid));
+                        });
+                    });
+
+                }
+
             });
 
         }
@@ -53,8 +71,19 @@ module.exports = function(app){
 
 }
 
-var userHasListAccess = function(){
+var isLoggedIn = function(req, res, next) {
 
+    if (req.isAuthenticated())
+        return next();
+
+    res.status(500).send({ error: 'Not logged in' });
+} 
+
+var checkUserHasListAccess = function(listid, userid, callback){
+    List.findById(listid, function(err, list){
+        var hasAccess = (list.userid == userid);
+        callback(err, hasAccess);
+    });
 }
 
 var getItems = function(items, listid){
