@@ -9,14 +9,11 @@ module.exports = function(app){
 
     // get all lists
     app.get('/api/list', isLoggedIn, function(req, res) {
-        // use mongoose to get all lists in the database
-        console.log(req.user);
         List.find(function(err, lists) {
-            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
                 res.send(err)
 
-            res.json(lists); // return all lists in JSON format
+            res.json(getItems(lists, req.user._id));
         });
     });
 
@@ -36,10 +33,10 @@ module.exports = function(app){
                     res.send(err);
 
                 // get and return all the lists after you create another
-                List.find(function(err, todos) {
+                List.find(function(err, lists) {
                     if (err)
                         res.send(err)
-                    res.json(todos);
+                    res.json(getItems(lists, req.user._id));
                 });
             });
 
@@ -64,9 +61,15 @@ module.exports = function(app){
         });
     });
 
+    var getItems = function(lists, userid){
+        return lists.filter(function(list){
+            return list.userid == userid;
+        });
+    }
+
 };
 
-function isLoggedIn(req, res, next) {
+var isLoggedIn = function(req, res, next) {
 
     if (req.isAuthenticated())
         return next();
