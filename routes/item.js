@@ -69,6 +69,33 @@ module.exports = function(app){
 
     });
 
+    app.delete('/api/list/:itemid', isLoggedIn, function(req, res) {
+       
+        checkUserHasListAccess(req.body.listid, req.user._id, function(err, hasAccess){
+
+            if (err)
+                res.send(err)
+
+            if (!hasAccess){
+                res.status(500).send({ error: 'Access Denied'});
+            }
+            else {
+
+                Item.remove({
+                    _id : req.params.itemid,
+                }, function(err, item) {
+                    if (err)
+                        res.send(err);
+        
+                    res.send(true);
+                });
+
+            }
+
+        });
+
+    });
+
 }
 
 var isLoggedIn = function(req, res, next) {

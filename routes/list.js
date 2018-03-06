@@ -42,7 +42,7 @@ module.exports = function(app){
     });
 
     // delete a list
-    app.delete('/api/list/:list_id', function(req, res) {
+    app.delete('/api/list/:list_id', isLoggedIn, function(req, res) {
 
         List.remove({
             _id : req.params.list_id,
@@ -55,7 +55,7 @@ module.exports = function(app){
             List.find(function(err, lists) {
                 if (err)
                     res.send(err)
-                res.json(lists);
+                res.json(getItems(lists, req.user._id));
             });
         });
     });
