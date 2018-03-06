@@ -1,14 +1,16 @@
 var mongoose = require('mongoose'); 
 
 var List = mongoose.model('List', {
+    userid: String,
     name : String
 });
 
 module.exports = function(app){
 
     // get all lists
-    app.get('/api/list', function(req, res) {
+    app.get('/api/list', isLoggedIn, function(req, res) {
         // use mongoose to get all lists in the database
+        console.log(req.user);
         List.find(function(err, lists) {
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
@@ -19,7 +21,7 @@ module.exports = function(app){
     });
 
     // create list and send back all lists after creation
-    app.post('/api/list', function(req, res) {
+    app.post('/api/list', isLoggedIn, function(req, res) {
 
         if (!req.body.name){
             res.status(500).send({ error: 'Name cannot be blank' });
@@ -27,8 +29,8 @@ module.exports = function(app){
         else{
 
             List.create({
-                name : req.body.name,
-                done : false
+                userid: req.user._id,
+                name : req.body.name
             }, function(err, todo) {
                 if (err)
                     res.send(err);
@@ -45,7 +47,7 @@ module.exports = function(app){
 
     });
 
-    // delete a todo
+    // delete a list
     app.delete('/api/list/:list_id', function(req, res) {
         List.remove({
             _id : req.params.list_id
@@ -63,3 +65,11 @@ module.exports = function(app){
     });
 
 };
+
+function isLoggedIn(req, res, next) {
+
+    if (req.isAuthenticated())
+        return next();
+
+    res.status(500).send({ error: 'Not logged in' });
+}   
