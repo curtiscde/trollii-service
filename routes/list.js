@@ -1,9 +1,6 @@
 var mongoose = require('mongoose'); 
 
-var List = mongoose.model('List', {
-    userid: String,
-    name : String
-});
+var List = require('../models/list');
 
 module.exports = function(app){
 
