@@ -34,6 +34,18 @@ module.exports = function(app, passport){
             res.status(500).send('Not logged in');
         }
         res.send(req.user);
-	});
+    });
+    
+    // =====================================
+    // GOOGLE ROUTES =======================
+    // =====================================
+    app.get('/api/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
+
+    // the callback after google has authenticated the user
+    app.get('/api/auth/google/callback',
+            passport.authenticate('google', {
+                    successRedirect : '/profile',
+                    failureRedirect : '/'
+            }));
     
 };
