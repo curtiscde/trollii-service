@@ -39,9 +39,6 @@ module.exports = function(app, passport){
     // =====================================
     // GOOGLE ROUTES =======================
     // =====================================
-    // send to google to do the authentication
-    // profile gets us their basic information including their name
-    // email gets their emails
     app.get('/api/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
 
     // the callback after google has authenticated the user
