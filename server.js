@@ -41,6 +41,7 @@ app.use(function(req, res, next) {
 
 // routes
 require('./routes/auth.js')(app, passport);
+require('./routes/user.js')(app);
 require('./routes/list.js')(app);
 require('./routes/item.js')(app);
 
