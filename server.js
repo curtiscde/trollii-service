@@ -10,6 +10,7 @@ var bodyParser = require('body-parser');    // pull information from HTML POST (
 var session      = require('express-session');
 var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
 
+var authConfig = require('./config/auth.js');
 var dbconfig = require('./config/database.js');
 
 // configuration =================
@@ -20,7 +21,9 @@ mongoose.connect(dbconfig.url)
 .then(function(r){
     console.log('DB connected');
 })
-.catch(console.log);;     // connect to mongoDB database on modulus.io
+.catch(console.log);
+
+app.set('superSecret', authConfig.secret);
 
 require('./config/passport')(passport); // pass passport for configuration
 
@@ -43,10 +46,14 @@ app.use(function(req, res, next) {
   });
 
 // routes
-require('./routes/auth.js')(app, passport);
-require('./routes/user.js')(app);
-require('./routes/list.js')(app);
-require('./routes/item.js')(app);
+var apiRoutes = express.Router(); 
+
+require('./routes/auth.js')(apiRoutes, passport);
+require('./routes/user.js')(apiRoutes);
+require('./routes/list.js')(apiRoutes);
+require('./routes/item.js')(apiRoutes);
+
+app.use('/api', apiRoutes);
 
 
 app.listen(port);

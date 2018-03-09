@@ -2,10 +2,10 @@ var mongoose = require('mongoose');
 
 var List = require('../models/list');
 
-module.exports = function(app){
+module.exports = function(apiRoutes){
 
     // get all lists
-    app.get('/api/list', isLoggedIn, function(req, res) {
+    apiRoutes.get('/list', isLoggedIn, function(req, res) {
         List.find(function(err, lists) {
             if (err)
                 res.send(err)
@@ -15,7 +15,7 @@ module.exports = function(app){
     });
 
     // create list and send back all lists after creation
-    app.post('/api/list', isLoggedIn, function(req, res) {
+    apiRoutes.post('/list', isLoggedIn, function(req, res) {
 
         if (!req.body.name){
             res.status(500).send({ error: 'Name cannot be blank' });
@@ -42,7 +42,7 @@ module.exports = function(app){
     });
 
     // delete a list
-    app.delete('/api/list/:list_id', isLoggedIn, function(req, res) {
+    apiRoutes.delete('/list/:list_id', isLoggedIn, function(req, res) {
 
         List.remove({
             _id : req.params.list_id,

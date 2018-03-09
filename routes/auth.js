@@ -1,6 +1,6 @@
-module.exports = function(app, passport){
+module.exports = function(apiRoutes, passport){
 
-    app.post('/api/auth/signup', function(req, res, next) {
+    apiRoutes.post('/auth/signup', function(req, res, next) {
         
         passport.authenticate('local-signup', function(err, user, info){
 
@@ -18,18 +18,18 @@ module.exports = function(app, passport){
 
     });
 
-    app.post('/api/auth/login', passport.authenticate('local-login', {
+    apiRoutes.post('/auth/login', passport.authenticate('local-login', {
         successRedirect : '/api/auth/profile', // redirect to the secure profile section
         failureRedirect : '/login', // redirect back to the signup page if there is an error
         failureFlash : true // allow flash messages
     }));
 
-    app.get('/api/auth/logout', function(req, res) {
+    apiRoutes.get('/auth/logout', function(req, res) {
         req.logout();
         res.send(true);
 	});
 
-    app.get('/api/auth/profile', function(req, res) {
+    apiRoutes.get('/auth/profile', function(req, res) {
         if (!req.user){
             res.status(500).send('Not logged in');
         }
@@ -39,10 +39,10 @@ module.exports = function(app, passport){
     // =====================================
     // GOOGLE ROUTES =======================
     // =====================================
-    app.get('/api/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
+    apiRoutes.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
 
     // the callback after google has authenticated the user
-    app.get('/api/auth/google/callback',
+    apiRoutes.get('/auth/google/callback',
             passport.authenticate('google', {
                     successRedirect : '/profile',
                     failureRedirect : '/'

@@ -1,6 +1,6 @@
-module.exports = function(app){
+module.exports = function(apiRoutes){
 
-    app.get('/api/user/profile', function(req, res) {
+    apiRoutes.get('/user/profile', function(req, res) {
 
         if (!req.isAuthenticated()){
             res.send({

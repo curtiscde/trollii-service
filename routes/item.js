@@ -3,9 +3,9 @@ var mongoose = require('mongoose');
 var Item = require('../models/item');
 var List = require('../models/list');
 
-module.exports = function(app){
+module.exports = function(apiRoutes){
 
-    app.get('/api/item/:listid', isLoggedIn, function(req, res) {
+    apiRoutes.get('/item/:listid', isLoggedIn, function(req, res) {
 
         checkUserHasListAccess(req.params.listid, req.user._id, function(err, hasAccess){
 
@@ -29,7 +29,7 @@ module.exports = function(app){
         
     });
 
-    app.post('/api/item', isLoggedIn, function(req, res) {
+    apiRoutes.post('/item', isLoggedIn, function(req, res) {
 
         if (!req.body.listid || !req.body.name){
             res.status(500).send({ error: 'listid and name cannot be blank' });
@@ -69,7 +69,7 @@ module.exports = function(app){
 
     });
 
-    app.delete('/api/list/:itemid', isLoggedIn, function(req, res) {
+    apiRoutes.delete('/item/:itemid', isLoggedIn, function(req, res) {
        
         checkUserHasListAccess(req.body.listid, req.user._id, function(err, hasAccess){
 
