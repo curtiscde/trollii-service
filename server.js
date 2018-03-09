@@ -2,6 +2,7 @@
 var express  = require('express');
 var app      = express();                               // create our app w/ express
 var mongoose = require('mongoose');                     // mongoose for mongodb
+var jwt    = require('jsonwebtoken');
 var passport = require('passport');
 var flash    = require('connect-flash');
 var morgan = require('morgan');             // log requests to the console (express4)
@@ -12,6 +13,8 @@ var methodOverride = require('method-override'); // simulate DELETE and PUT (exp
 var dbconfig = require('./config/database.js');
 
 // configuration =================
+
+var port = process.env.PORT || 8080;
 
 mongoose.connect(dbconfig.url)
 .then(function(r){
@@ -46,5 +49,5 @@ require('./routes/list.js')(app);
 require('./routes/item.js')(app);
 
 
-app.listen(8080);
-console.log("App listening on port 8080");
+app.listen(port);
+console.log("App listening on port " + port);
