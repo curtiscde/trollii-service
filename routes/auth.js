@@ -5,7 +5,7 @@ module.exports = function(app, passport){
         passport.authenticate('local-signup', function(err, user, info){
 
             if (err) { return next(err); }
-            if (!user) { return res.redirect('/'); }
+            if (!user) { return res.status(500).send(''); }
 
             // req / res held in closure
             req.logIn(user, function(err) {
