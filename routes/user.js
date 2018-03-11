@@ -11,15 +11,20 @@ var jwtCheck = expressJwt({
     audience: 'https://trollii.com/',
     issuer: "https://curt.auth0.com/",
     algorithms: ['RS256'],
-    getToken: (req) => {
-        return req.params.token;
+    getToken: function fromHeaderOrQuerystring (req) {
+        if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+            return req.headers.authorization.split(' ')[1];
+        } else if (req.query && req.query.token) {
+          return req.query.token;
+        }
+        return null;
     }
 });
 
 
 module.exports = function(apiRoutes){
 
-    apiRoutes.get('/user/profile/:token', jwtCheck, function(req, res) {
+    apiRoutes.get('/user/profile', jwtCheck, function(req, res) {
 
         console.log(req.user);
 
@@ -29,7 +34,6 @@ module.exports = function(apiRoutes){
             });
         }
         else{
-
 
             res.send({
                 authenticated: true
