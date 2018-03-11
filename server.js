@@ -7,7 +7,6 @@ var passport = require('passport');
 var flash    = require('connect-flash');
 var morgan = require('morgan');             // log requests to the console (express4)
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
-var session      = require('express-session');
 var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
 
 var authConfig = require('./config/auth.js');
@@ -34,9 +33,7 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse applica
 app.use(methodOverride());
 
 // required for passport
-app.use(session({ secret: 'secretpasskey' })); // session secret
 app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
 app.use(function(req, res, next) {
