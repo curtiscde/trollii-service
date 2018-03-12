@@ -1,6 +1,10 @@
-module.exports = function(app){
+var authJwt = require('../auth/jwt.js');
 
-    app.get('/api/user/profile', function(req, res) {
+module.exports = function(apiRoutes){
+
+    apiRoutes.get('/user/profile', authJwt.jwtCheck, function(req, res) {
+
+        console.log(req.user);
 
         if (!req.isAuthenticated()){
             res.send({
@@ -8,7 +12,6 @@ module.exports = function(app){
             });
         }
         else{
-
 
             res.send({
                 authenticated: true

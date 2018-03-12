@@ -2,22 +2,30 @@
 var express  = require('express');
 var app      = express();                               // create our app w/ express
 var mongoose = require('mongoose');                     // mongoose for mongodb
+var jwt    = require('jsonwebtoken');
 var passport = require('passport');
 var flash    = require('connect-flash');
 var morgan = require('morgan');             // log requests to the console (express4)
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
-var session      = require('express-session');
 var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
 
-var dbconfig = require('./config/database.js');
 
 // configuration =================
 
-mongoose.connect(dbconfig.url)
+if (!process.env.prod){
+    var env = require('./env.js');
+}
+var authConfig = require('./config/auth.js')(process.env);
+
+var port = process.env.PORT || 8080;
+
+mongoose.connect(process.env.dbconnection)
 .then(function(r){
     console.log('DB connected');
 })
-.catch(console.log);;     // connect to mongoDB database on modulus.io
+.catch(console.log);
+
+app.set('superSecret', authConfig.secret);
 
 require('./config/passport')(passport); // pass passport for configuration
 
@@ -28,9 +36,7 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse applica
 app.use(methodOverride());
 
 // required for passport
-app.use(session({ secret: 'secretpasskey' })); // session secret
 app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
 app.use(function(req, res, next) {
@@ -40,11 +46,14 @@ app.use(function(req, res, next) {
   });
 
 // routes
-require('./routes/auth.js')(app, passport);
-require('./routes/user.js')(app);
-require('./routes/list.js')(app);
-require('./routes/item.js')(app);
+var apiRoutes = express.Router(); 
+
+require('./routes/user.js')(apiRoutes);
+require('./routes/list.js')(apiRoutes);
+require('./routes/item.js')(apiRoutes);
+
+app.use('/api', apiRoutes);
 
 
-app.listen(8080);
-console.log("App listening on port 8080");
+app.listen(port);
+console.log("App listening on port " + port);

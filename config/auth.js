@@ -1,4 +1,4 @@
-module.exports = {
+module.exports = (processEnv) => {
 
     // 'facebookAuth' : {
     //     'clientID'      : 'your-secret-clientID-here', // your App ID
@@ -13,11 +13,14 @@ module.exports = {
     //     'consumerSecret'    : 'your-client-secret-here',
     //     'callbackURL'       : 'http://localhost:8080/auth/twitter/callback'
     // },
+    return {
+        
+        'googleAuth' : {
+            'clientID'      : processEnv.googleAuthClientID,
+            'clientSecret'  : processEnv.googleAuthClientSecret,
+            'callbackURL'   : processEnv.googleAuthCallbackURL
+        }
 
-    'googleAuth' : {
-        'clientID'      : 'your-secret-clientID-here',
-        'clientSecret'  : 'your-client-secret-here',
-        'callbackURL'   : 'http://localhost:8080/auth/google/callback'
     }
 
 };
