@@ -45,7 +45,6 @@ app.use(function(req, res, next) {
 // routes
 var apiRoutes = express.Router(); 
 
-require('./routes/auth.js')(apiRoutes, passport);
 require('./routes/user.js')(apiRoutes);
 require('./routes/list.js')(apiRoutes);
 require('./routes/item.js')(apiRoutes);
