@@ -9,14 +9,17 @@ var morgan = require('morgan');             // log requests to the console (expr
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
 var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
 
-var authConfig = require('./config/auth.js');
-var dbconfig = require('./config/database.js');
 
 // configuration =================
 
+if (!process.env.prod){
+    var env = require('./env.js');
+}
+var authConfig = require('./config/auth.js')(process.env);
+
 var port = process.env.PORT || 8080;
 
-mongoose.connect(dbconfig.url)
+mongoose.connect(process.env.dbconnection)
 .then(function(r){
     console.log('DB connected');
 })
