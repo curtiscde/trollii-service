@@ -3,9 +3,11 @@ var mongoose = require('mongoose');
 var Item = require('../models/item');
 var List = require('../models/list');
 
+var authJwt = require('../auth/jwt.js');
+
 module.exports = function(apiRoutes){
 
-    apiRoutes.get('/item/:listid', isLoggedIn, function(req, res) {
+    apiRoutes.get('/item/:listid', authJwt.jwtCheck, function(req, res) {
 
         checkUserHasListAccess(req.params.listid, req.user._id, function(err, hasAccess){
 
@@ -29,7 +31,7 @@ module.exports = function(apiRoutes){
         
     });
 
-    apiRoutes.post('/item', isLoggedIn, function(req, res) {
+    apiRoutes.post('/item', authJwt.jwtCheck, function(req, res) {
 
         if (!req.body.listid || !req.body.name){
             res.status(500).send({ error: 'listid and name cannot be blank' });
@@ -69,7 +71,7 @@ module.exports = function(apiRoutes){
 
     });
 
-    apiRoutes.delete('/item/:itemid', isLoggedIn, function(req, res) {
+    apiRoutes.delete('/item/:itemid', authJwt.jwtCheck, function(req, res) {
        
         checkUserHasListAccess(req.body.listid, req.user._id, function(err, hasAccess){
 
@@ -97,14 +99,6 @@ module.exports = function(apiRoutes){
     });
 
 }
-
-var isLoggedIn = function(req, res, next) {
-
-    if (req.isAuthenticated())
-        return next();
-
-    res.status(500).send({ error: 'Not logged in' });
-} 
 
 var checkUserHasListAccess = function(listid, userid, callback){
     List.findById(listid, function(err, list){
