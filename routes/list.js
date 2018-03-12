@@ -1,11 +1,33 @@
-var mongoose = require('mongoose'); 
+var mongoose = require('mongoose');
+var expressJwt = require('express-jwt');
+var jwks = require('jwks-rsa');
+
+var jwtCheck = expressJwt({
+    secret: jwks.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: "https://curt.auth0.com/.well-known/jwks.json"
+    }),
+    audience: 'https://trollii.com/',
+    issuer: "https://curt.auth0.com/",
+    algorithms: ['RS256'],
+    getToken: function fromHeaderOrQuerystring (req) {
+        if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+            return req.headers.authorization.split(' ')[1];
+        } else if (req.query && req.query.token) {
+          return req.query.token;
+        }
+        return null;
+    }
+});
 
 var List = require('../models/list');
 
 module.exports = function(apiRoutes){
 
     // get all lists
-    apiRoutes.get('/list', isLoggedIn, function(req, res) {
+    apiRoutes.get('/list', jwtCheck, function(req, res) {
         List.find(function(err, lists) {
             if (err)
                 res.send(err)
@@ -15,7 +37,7 @@ module.exports = function(apiRoutes){
     });
 
     // create list and send back all lists after creation
-    apiRoutes.post('/list', isLoggedIn, function(req, res) {
+    apiRoutes.post('/list', jwtCheck, function(req, res) {
 
         if (!req.body.name){
             res.status(500).send({ error: 'Name cannot be blank' });
@@ -42,7 +64,7 @@ module.exports = function(apiRoutes){
     });
 
     // delete a list
-    apiRoutes.delete('/list/:list_id', isLoggedIn, function(req, res) {
+    apiRoutes.delete('/list/:list_id', jwtCheck, function(req, res) {
 
         List.remove({
             _id : req.params.list_id,
@@ -67,11 +89,3 @@ module.exports = function(apiRoutes){
     }
 
 };
-
-var isLoggedIn = function(req, res, next) {
-
-    if (req.isAuthenticated())
-        return next();
-
-    res.status(500).send({ error: 'Not logged in' });
-}   
