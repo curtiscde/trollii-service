@@ -9,7 +9,7 @@ module.exports = function(apiRoutes){
 
     apiRoutes.get('/item/:listid', authJwt.jwtCheck, function(req, res) {
 
-        checkUserHasListAccess(req.params.listid, req.user._id, function(err, hasAccess){
+        checkUserHasListAccess(req.params.listid, req.user.sub, function(err, hasAccess){
 
             if (err)
                 res.send(err)
@@ -38,7 +38,7 @@ module.exports = function(apiRoutes){
         }
         else{
 
-            checkUserHasListAccess(req.body.listid, req.user._id, function(err, hasAccess){
+            checkUserHasListAccess(req.body.listid, req.user.sub, function(err, hasAccess){
 
                 if (err)
                     res.send(err)
@@ -48,20 +48,34 @@ module.exports = function(apiRoutes){
                 }
                 else {
 
-                    Item.create({
-                        listid: req.body.listid,
-                        name : req.body.name,
-                        userid: req.user._id
-                    }, function(err, items) {
-                        if (err)
-                            res.send(err);
+                    List.findById(req.body.listid, function(err, list){
 
-                        Item.find(function(err, items) {
-                            if (err)
-                                res.send(err)
-                            res.json(getItems(items, req.body.listid));
+                        console.log(req.body.listid);
+
+                        list.items.push({
+                            name: 'Foo bar'
                         });
+                        console.log(list);
+                        List.save();
+
+                        res.json(List);
+
                     });
+
+                    // Item.create({
+                    //     listid: req.body.listid,
+                    //     name : req.body.name,
+                    //     userid: req.user._id
+                    // }, function(err, items) {
+                    //     if (err)
+                    //         res.send(err);
+
+                    //     Item.find(function(err, items) {
+                    //         if (err)
+                    //             res.send(err)
+                    //         res.json(getItems(items, req.body.listid));
+                    //     });
+                    // });
 
                 }
 
@@ -73,7 +87,7 @@ module.exports = function(apiRoutes){
 
     apiRoutes.delete('/item/:itemid', authJwt.jwtCheck, function(req, res) {
        
-        checkUserHasListAccess(req.body.listid, req.user._id, function(err, hasAccess){
+        checkUserHasListAccess(req.body.listid, req.user.sub, function(err, hasAccess){
 
             if (err)
                 res.send(err)
@@ -102,7 +116,7 @@ module.exports = function(apiRoutes){
 
 var checkUserHasListAccess = function(listid, userid, callback){
     List.findById(listid, function(err, list){
-        var hasAccess = (list.userid == userid);
+        var hasAccess = list && (list.userid == userid);
         callback(err, hasAccess);
     });
 }
