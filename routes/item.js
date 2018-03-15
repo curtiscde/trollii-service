@@ -50,32 +50,17 @@ module.exports = function(apiRoutes){
 
                     List.findById(req.body.listid, function(err, list){
 
-                        console.log(req.body.listid);
+                        if (err){
+                            console.log(err);
+                        }                        
 
                         list.items.push({
-                            name: 'Foo bar'
+                            name: req.body.name
                         });
-                        console.log(list);
-                        List.save();
+                        list.save();
 
-                        res.json(List);
-
+                        res.json(list);
                     });
-
-                    // Item.create({
-                    //     listid: req.body.listid,
-                    //     name : req.body.name,
-                    //     userid: req.user._id
-                    // }, function(err, items) {
-                    //     if (err)
-                    //         res.send(err);
-
-                    //     Item.find(function(err, items) {
-                    //         if (err)
-                    //             res.send(err)
-                    //         res.json(getItems(items, req.body.listid));
-                    //     });
-                    // });
 
                 }
 
