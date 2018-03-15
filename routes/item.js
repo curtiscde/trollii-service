@@ -84,20 +84,11 @@ module.exports = function(apiRoutes){
 
                 console.log('Access to remove');
 
-                List.findById(req.body.listid, function(err, list){
+                List.findById(req.params.listid, function(err, list){
                     list.items.remove({_id: req.params.itemid});
                     list.save();
                     res.json(list);
                 });
-
-                // Item.remove({
-                //     _id : req.params.itemid,
-                // }, function(err, item) {
-                //     if (err)
-                //         res.send(err);
-        
-                //     res.send(true);
-                // });
 
             }
 
