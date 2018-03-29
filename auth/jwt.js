@@ -8,7 +8,7 @@ var jwtCheck = expressJwt({
         jwksRequestsPerMinute: 5,
         jwksUri: "https://curt.auth0.com/.well-known/jwks.json"
     }),
-    audience: 'https://trollii.com/',
+    audience: 'https://trolliidev.com/',
     issuer: "https://curt.auth0.com/",
     algorithms: ['RS256'],
     getToken: function fromHeaderOrQuerystring (req) {
