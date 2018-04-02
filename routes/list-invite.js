@@ -36,8 +36,12 @@ module.exports = function(apiRoutes){
                         date: new Date()
                     });
                     list.save();
+
+                    var inviteid = list.invites.find((invite) => {
+                        return invite.email === req.body.email
+                    })._id;
                     
-                    emailInvite(req.body.email, () => {
+                    emailInvite(req.body.email, inviteid, () => {
                         res.json({ success: true });
                     });
 
@@ -50,7 +54,7 @@ module.exports = function(apiRoutes){
     });
 
 
-    let emailInvite = (email, cb) => {
+    let emailInvite = (email, inviteid, cb) => {
 
         const client = new sparkpost(process.env.sparkpostAPI);
 
@@ -58,7 +62,7 @@ module.exports = function(apiRoutes){
             content: {
                 from: process.env.noreplyemail,
                 subject: 'Invite from Trollii',
-                html: 'Trollii invite email content'
+                html: 'Trollii invite email content<br/>' + inviteid
             },
             recipients: [{
                 address: email
