@@ -1,8 +1,10 @@
 var mongoose = require('mongoose');
-
-var List = require('../models/list');
+var nodemailer = require("nodemailer");
+var sparkpost = require("sparkpost");
 
 var authJwt = require('../auth/jwt.js');
+
+var List = require('../models/list');
 
 module.exports = function(apiRoutes){
 
@@ -34,8 +36,10 @@ module.exports = function(apiRoutes){
                         date: new Date()
                     });
                     list.save();
-    
-                    res.json({ success: true });
+                    
+                    emailInvite(req.body.email, () => {
+                        res.json({ success: true });
+                    });
 
                 }
                 
@@ -44,5 +48,34 @@ module.exports = function(apiRoutes){
         }
 
     });
+
+
+    let emailInvite = (email, cb) => {
+
+        const client = new sparkpost(process.env.sparkpostAPI);
+
+        client.transmissions.send({
+            content: {
+                from: process.env.noreplyemail,
+                subject: 'Invite from Trollii',
+                html: 'Trollii invite email content'
+            },
+            recipients: [{
+                address: email
+            }]
+        })
+        .then(data => {
+            console.log('Email sent');
+            console.log(data);
+
+            cb();
+        })
+        .catch(err => {
+            console.log('Email could not be sent');
+            console.log(err)
+        });
+
+
+    }
 
 };
