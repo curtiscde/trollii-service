@@ -5,5 +5,11 @@ module.exports = mongoose.model('List', {
     name : String,
     items : [{
         name : String
+    }],
+    invites: [{
+        userid: String,
+        listid : String,
+        email: String,
+        date: Date
     }]
 });
