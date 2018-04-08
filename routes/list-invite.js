@@ -53,6 +53,10 @@ module.exports = function(apiRoutes){
 
     });
 
+    apiRoutes.post('/list-invite/accept', authJwt.jwtCheck, function(req, res){
+
+    });
+
 
     let emailInvite = (email, inviteid, cb) => {
 
