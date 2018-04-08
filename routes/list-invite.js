@@ -62,7 +62,7 @@ module.exports = function(apiRoutes){
             content: {
                 from: process.env.noreplyemail,
                 subject: 'Invite from Trollii',
-                html: 'Trollii invite email content<br/>' + inviteid
+                html: emailHtml(process.env.webAppUrl, inviteid)
             },
             recipients: [{
                 address: email
@@ -79,7 +79,10 @@ module.exports = function(apiRoutes){
             console.log(err)
         });
 
+    }
 
+    let emailHtml = (webAppUrl, inviteid) => {
+        return `<a href='${webAppUrl}/list/invite/${inviteid}'>Accept Invite</a>`;
     }
 
 };
