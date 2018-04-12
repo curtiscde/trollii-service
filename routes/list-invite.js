@@ -65,15 +65,20 @@ module.exports = function(apiRoutes){
         List.findById(listid, function(err, list){
             if (err)
                 res.send(err)
+
+            console.log('user', req.user);
+            console.log('list', list);
             
             let invite = list.invites.find(inv => inv._id == inviteid && inv.email == email);
+
+            console.log('invite', invite);
 
             if (invite){
                 addUserToListMembers(list, userid);
                 res.json({ success: true });
             }
             else{
-                res.status(500);
+                res.status(500).send({ error: 'Invite not found' });
             }
             
         });
