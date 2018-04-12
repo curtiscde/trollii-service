@@ -6,7 +6,7 @@ var authJwt = require('../auth/jwt.js');
 
 var getItems = function(lists, userid){
     return lists.filter(function(list){
-        return list.userid == userid;
+        return list.ownerid == userid;
     });
 }
 
@@ -31,7 +31,7 @@ module.exports = function(apiRoutes){
         else{
 
             List.create({
-                userid: req.user.sub,
+                ownerid: req.user.sub,
                 name : req.body.name
             }, function(err, todo) {
                 if (err)

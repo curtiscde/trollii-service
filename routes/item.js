@@ -100,7 +100,7 @@ module.exports = function(apiRoutes){
 
 var checkUserHasListAccess = function(listid, userid, callback){
     List.findById(listid, function(err, list){
-        var hasAccess = list && (list.userid == userid);
+        var hasAccess = list && (list.ownerid == userid);
         callback(err, hasAccess);
     });
 }
