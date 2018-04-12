@@ -25,7 +25,7 @@ module.exports = function(apiRoutes){
                     console.log(err);
                 }
 
-                if (list.userid !== req.user.sub){
+                if (list.ownerid !== req.user.sub){
                     res.status(500).send({ error: 'Permission denied' });
                 }
                 else{
@@ -60,6 +60,7 @@ module.exports = function(apiRoutes){
         let listid = req.body.listid;
         let inviteid = req.body.inviteid;
         let email = req.user.email;
+        let userid = req.user.sub;
 
         List.findById(listid, function(err, list){
             if (err)
@@ -67,9 +68,14 @@ module.exports = function(apiRoutes){
             
             let invite = list.invites.find(inv => inv._id == inviteid && inv.email == email);
 
-            console.log('invite', invite);
-
-            res.send();
+            if (invite){
+                addUserToListMembers(list, userid);
+                res.json({ success: true });
+            }
+            else{
+                res.status(500);
+            }
+            
         });
     });
 
@@ -105,4 +111,10 @@ module.exports = function(apiRoutes){
         return `<a href='${webAppUrl}/list/invite/${inviteid}'>Accept Invite</a>`;
     }
 
+    let addUserToListMembers = (list, userid) => {
+        list.members.push({
+            userid: userid
+        });
+        list.save();
+    }
 };
