@@ -53,7 +53,7 @@ module.exports = function(apiRoutes){
 
         List.remove({
             _id : req.params.list_id,
-            userid: req.user.sub
+            ownerid: req.user.sub
         }, function(err, list) {
             if (err)
                 res.send(err);
