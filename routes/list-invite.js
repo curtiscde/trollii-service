@@ -55,6 +55,22 @@ module.exports = function(apiRoutes){
 
     apiRoutes.post('/list-invite/accept', authJwt.jwtCheck, function(req, res){
 
+        console.log('list-invite accept');
+
+        let listid = req.body.listid;
+        let inviteid = req.body.inviteid;
+        let email = req.user.email;
+
+        List.findById(listid, function(err, list){
+            if (err)
+                res.send(err)
+            
+            let invite = list.invites.find(inv => inv._id == inviteid && inv.email == email);
+
+            console.log('invite', invite);
+
+            res.send();
+        });
     });
 
 
