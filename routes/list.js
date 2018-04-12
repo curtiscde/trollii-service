@@ -4,7 +4,7 @@ var List = require('../models/list');
 
 var authJwt = require('../auth/jwt.js');
 
-var getItems = function(lists, userid){
+var getUserLists = function(lists, userid){
     return lists.filter(function(list){
         return list.members.filter(member => member.userid == userid).length;
     });
@@ -18,7 +18,7 @@ module.exports = function(apiRoutes){
             if (err)
                 res.send(err)
 
-            res.json(getItems(lists, req.user.sub));
+            res.json(getUserLists(lists, req.user.sub));
         });
     });
 
@@ -44,7 +44,7 @@ module.exports = function(apiRoutes){
                 List.find(function(err, lists) {
                     if (err)
                         res.send(err)
-                    res.json(getItems(lists, req.user.sub));
+                    res.json(getUserLists(lists, req.user.sub));
                 });
             });
 
@@ -66,7 +66,7 @@ module.exports = function(apiRoutes){
             List.find(function(err, lists) {
                 if (err)
                     res.send(err)
-                res.json(getItems(lists, req.user.sub));
+                res.json(getUserLists(lists, req.user.sub));
             });
         });
     });
