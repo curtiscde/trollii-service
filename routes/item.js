@@ -7,30 +7,6 @@ var authJwt = require('../auth/jwt.js');
 
 module.exports = function(apiRoutes){
 
-    apiRoutes.get('/item/:listid', authJwt.jwtCheck, function(req, res) {
-
-        checkUserHasListAccess(req.params.listid, req.user.sub, function(err, hasAccess){
-
-            if (err)
-                res.send(err)
-
-            if (!hasAccess){
-                res.status(500).send({ error: 'Access Denied'});
-            }
-            else {
-
-                Item.find(function(err, items) {
-                    if (err)
-                        res.send(err)
-                    res.json(getItems(items, req.params.listid));
-                });
-
-            }
-
-        });
-        
-    });
-
     apiRoutes.post('/item', authJwt.jwtCheck, function(req, res) {
 
         if (!req.body.listid || !req.body.name){
