@@ -6,7 +6,7 @@ var authJwt = require('../auth/jwt.js');
 
 var getItems = function(lists, userid){
     return lists.filter(function(list){
-        return list.ownerid == userid;
+        return list.members.filter(member => member.userid == userid).length;
     });
 }
 
