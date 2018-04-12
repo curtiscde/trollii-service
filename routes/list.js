@@ -32,7 +32,10 @@ module.exports = function(apiRoutes){
 
             List.create({
                 ownerid: req.user.sub,
-                name : req.body.name
+                name : req.body.name,
+                members: [{
+                    userid: req.user.sub
+                }]
             }, function(err, todo) {
                 if (err)
                     res.send(err);

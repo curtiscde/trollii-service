@@ -11,5 +11,8 @@ module.exports = mongoose.model('List', {
         listid : String,
         email: String,
         date: Date
+    }],
+    members: [{
+        userid: String
     }]
 });
