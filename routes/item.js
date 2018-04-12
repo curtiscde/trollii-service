@@ -5,6 +5,8 @@ var List = require('../models/list');
 
 var authJwt = require('../auth/jwt.js');
 
+var listHelper = require('../helpers/list');
+
 module.exports = function(apiRoutes){
 
     apiRoutes.post('/item', authJwt.jwtCheck, function(req, res) {
@@ -76,13 +78,7 @@ module.exports = function(apiRoutes){
 
 var checkUserHasListAccess = function(listid, userid, callback){
     List.findById(listid, function(err, list){
-        var hasAccess = list && (list.ownerid == userid);
+        var hasAccess = listHelper.hasUserListAccess(list, userid);
         callback(err, hasAccess);
-    });
-}
-
-var getItems = function(items, listid){
-    return items.filter(function(item){
-        return item.listid == listid;
     });
 }
