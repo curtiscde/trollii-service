@@ -7,3 +7,7 @@ process.env.dbconnection = '';
 process.env.sparkpostAPI = '';
 process.env.noreplyemail = '';
 
+process.env.webAppUrl = '';
+
+process.env.auth0Audience = '';
+
