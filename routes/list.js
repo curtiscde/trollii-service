@@ -4,11 +4,7 @@ var List = require('../models/list');
 
 var authJwt = require('../auth/jwt.js');
 
-var getItems = function(lists, userid){
-    return lists.filter(function(list){
-        return list.userid == userid;
-    });
-}
+var listHelper = require('../helpers/list');
 
 module.exports = function(apiRoutes){
 
@@ -18,7 +14,7 @@ module.exports = function(apiRoutes){
             if (err)
                 res.send(err)
 
-            res.json(getItems(lists, req.user.sub));
+            res.json(listHelper.getUserLists(lists, req.user.sub));
         });
     });
 
@@ -31,8 +27,11 @@ module.exports = function(apiRoutes){
         else{
 
             List.create({
-                userid: req.user.sub,
-                name : req.body.name
+                ownerid: req.user.sub,
+                name : req.body.name,
+                members: [{
+                    userid: req.user.sub
+                }]
             }, function(err, todo) {
                 if (err)
                     res.send(err);
@@ -41,7 +40,7 @@ module.exports = function(apiRoutes){
                 List.find(function(err, lists) {
                     if (err)
                         res.send(err)
-                    res.json(getItems(lists, req.user.sub));
+                    res.json(listHelper.getUserLists(lists, req.user.sub));
                 });
             });
 
@@ -54,7 +53,7 @@ module.exports = function(apiRoutes){
 
         List.remove({
             _id : req.params.list_id,
-            userid: req.user.sub
+            ownerid: req.user.sub
         }, function(err, list) {
             if (err)
                 res.send(err);
@@ -63,7 +62,7 @@ module.exports = function(apiRoutes){
             List.find(function(err, lists) {
                 if (err)
                     res.send(err)
-                res.json(getItems(lists, req.user.sub));
+                res.json(listHelper.getUserLists(lists, req.user.sub));
             });
         });
     });

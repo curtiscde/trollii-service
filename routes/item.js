@@ -5,31 +5,9 @@ var List = require('../models/list');
 
 var authJwt = require('../auth/jwt.js');
 
+var listHelper = require('../helpers/list');
+
 module.exports = function(apiRoutes){
-
-    apiRoutes.get('/item/:listid', authJwt.jwtCheck, function(req, res) {
-
-        checkUserHasListAccess(req.params.listid, req.user.sub, function(err, hasAccess){
-
-            if (err)
-                res.send(err)
-
-            if (!hasAccess){
-                res.status(500).send({ error: 'Access Denied'});
-            }
-            else {
-
-                Item.find(function(err, items) {
-                    if (err)
-                        res.send(err)
-                    res.json(getItems(items, req.params.listid));
-                });
-
-            }
-
-        });
-        
-    });
 
     apiRoutes.post('/item', authJwt.jwtCheck, function(req, res) {
 
@@ -100,13 +78,7 @@ module.exports = function(apiRoutes){
 
 var checkUserHasListAccess = function(listid, userid, callback){
     List.findById(listid, function(err, list){
-        var hasAccess = list && (list.userid == userid);
+        var hasAccess = listHelper.hasUserListAccess(list, userid);
         callback(err, hasAccess);
-    });
-}
-
-var getItems = function(items, listid){
-    return items.filter(function(item){
-        return item.listid == listid;
     });
 }

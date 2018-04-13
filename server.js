@@ -49,9 +49,10 @@ app.use(function(req, res, next) {
 // routes
 var apiRoutes = express.Router(); 
 
-require('./routes/user.js')(apiRoutes);
-require('./routes/list.js')(apiRoutes);
 require('./routes/item.js')(apiRoutes);
+require('./routes/list-invite.js')(apiRoutes);
+require('./routes/list.js')(apiRoutes);
+require('./routes/user.js')(apiRoutes);
 
 app.use('/api', apiRoutes);
 
