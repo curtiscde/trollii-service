@@ -10,13 +10,9 @@ module.exports = function(apiRoutes){
 
     // get all lists
     apiRoutes.get('/list', authJwt.jwtCheck, function(req, res) {
-        console.log('get /list');
-        console.log('Passed jwtCheck');
         List.find(function(err, lists) {
             if (err)
                 res.send(err)
-
-            console.log('lists', lists);
 
             res.json(listHelper.getUserLists(lists, req.user.sub));
         });
