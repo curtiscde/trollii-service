@@ -59,7 +59,7 @@ module.exports = function(apiRoutes){
 
         let listid = req.body.listid;
         let inviteid = req.body.inviteid;
-        let email = req.user.email;
+        let email = req.body.email;
         let userid = req.user.sub;
 
         List.findById(listid, function(err, list){
