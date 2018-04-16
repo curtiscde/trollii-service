@@ -67,4 +67,30 @@ module.exports = function(apiRoutes){
         });
     });
 
+    apiRoutes.delete('/list/:list_id/member', authJwt.jwtCheck, function(req, res){
+
+        List.findById(req.params.list_id, (err, list) => {
+            if(err){
+                res.send(err);
+            }
+
+            let userid = req.user.sub;
+
+            console.log(userid);
+
+            let member = list.members.find((m) => m.userid === userid && m.userid !== list.ownerid);
+
+            if (!member){
+                res.status(500).send({ error: 'Member not found' });
+            }
+            else{
+                list.members.remove({_id: member._id});
+                list.save();
+                res.json({success:true});
+            }
+
+        });
+
+    });
+
 };
