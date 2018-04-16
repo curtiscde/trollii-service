@@ -30,12 +30,18 @@ module.exports = function(apiRoutes){
                 }
                 else{
 
-                    list.invites.push({
-                        userid: req.user.sub,
-                        email: req.body.email,
-                        date: new Date()
-                    });
-                    list.save();
+                    //Add to invites if one doesn't already exist for this email
+
+                    console.log(list.invites.find(invite => invite.email === req.body.email));
+
+                    if (!list.invites.find(invite => invite.email === req.body.email)){
+                        list.invites.push({
+                            userid: req.user.sub,
+                            email: req.body.email,
+                            date: new Date()
+                        });
+                        list.save();
+                    }
 
                     var inviteid = list.invites.find((invite) => {
                         return invite.email === req.body.email
@@ -59,7 +65,7 @@ module.exports = function(apiRoutes){
 
         let listid = req.body.listid;
         let inviteid = req.body.inviteid;
-        let email = req.user.email;
+        let email = req.body.email;
         let userid = req.user.sub;
 
         List.findById(listid, function(err, list){
@@ -75,6 +81,8 @@ module.exports = function(apiRoutes){
 
             if (invite){
                 addUserToListMembers(list, userid);
+                removeUserInvite(list, email);
+                list.save();
                 res.json({ success: true });
             }
             else{
@@ -120,6 +128,14 @@ module.exports = function(apiRoutes){
         list.members.push({
             userid: userid
         });
-        list.save();
+    }
+
+    let removeUserInvite = (list, email) => {
+        list.invites.forEach(invite => {
+            if (invite.email === email){
+                list.invites.remove({ _id: invite._id });
+                console.log('removed');
+            }
+        });
     }
 };
