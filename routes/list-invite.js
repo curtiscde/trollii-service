@@ -5,54 +5,70 @@ var sparkpost = require("sparkpost");
 var authJwt = require('../auth/jwt.js');
 
 var List = require('../models/list');
+var ListInvite = require('../models/list-invite');
 
 module.exports = function(apiRoutes){
 
     // get all lists
     apiRoutes.post('/list-invite', authJwt.jwtCheck, function(req, res) {
 
-        if (!req.body.listid ||
-            !req.body.email){
+        let listid = req.body.listid;
+        let email = req.body.email;
+        let userid = req.user.sub;
+
+        if (!listid ||
+            !email){
             
             res.status(500).send({ error: 'Missing fields' });
 
         }
         else {
 
-            List.findById(req.body.listid, function(err, list){
+            
+            List.findById(listid, (err, list) => {
 
                 if (err){
                     console.log(err);
                 }
 
-                if (list.ownerid !== req.user.sub){
+                if (list.ownerid !== userid){
                     res.status(500).send({ error: 'Permission denied' });
                 }
                 else{
 
-                    //Add to invites if one doesn't already exist for this email
+                    ListInvite.find((err, listInvites) => {
 
-                    console.log(list.invites.find(invite => invite.email === req.body.email));
+                        let existingListInvite = listInvites.find(invite => invite.listid === listid &&
+                                                                            invite.email === email);
 
-                    if (!list.invites.find(invite => invite.email === req.body.email)){
-                        list.invites.push({
-                            userid: req.user.sub,
-                            email: req.body.email,
-                            date: new Date()
-                        });
-                        list.save();
-                    }
+                        //Add to invites if one doesn't already exist for this email
+                        if (!existingListInvite){
 
-                    var inviteid = list.invites.find((invite) => {
-                        return invite.email === req.body.email
-                    })._id;
-                    
-                    emailInvite(req.body.email, inviteid, () => {
-                        res.json({ success: true });
+                            ListInvite.create({
+                                userid: userid,
+                                listid: listid,
+                                email: email,
+                                date: new Date()
+                            }, (err, listInvite) => {
+                                if (err)
+                                    res.send(err);
+                                
+                                emailInvite(req.body.email, listInvite._id, () => {
+                                    res.json({ success: true });
+                                });
+
+                            });
+
+                        }
+                        else{
+                            emailInvite(existingListInvite.email, existingListInvite._id, () => {
+                                res.json({ success: true });
+                            });
+                        }
+
                     });
-
                 }
-                
+
             });
 
         }
