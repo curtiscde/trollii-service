@@ -6,12 +6,6 @@ module.exports = mongoose.model('List', {
     items : [{
         name : String
     }],
-    invites: [{
-        userid: String,
-        listid : String,
-        email: String,
-        date: Date
-    }],
     members: [{
         userid: String
     }]

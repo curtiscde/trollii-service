@@ -77,32 +77,31 @@ module.exports = function(apiRoutes){
 
     apiRoutes.post('/list-invite/accept', authJwt.jwtCheck, function(req, res){
 
-        console.log('list-invite accept');
-
-        let listid = req.body.listid;
         let inviteid = req.body.inviteid;
         let email = req.body.email;
         let userid = req.user.sub;
 
-        List.findById(listid, function(err, list){
+        ListInvite.findById(inviteid, function(err, listInvite){
             if (err)
                 res.send(err)
 
-            console.log('user', req.user);
-            console.log('list', list);
-            
-            let invite = list.invites.find(inv => inv._id == inviteid && inv.email == email);
+            console.log('listInvite', listInvite);
 
-            console.log('invite', invite);
+            if (listInvite.email === email){
 
-            if (invite){
-                addUserToListMembers(list, userid);
-                removeUserInvite(list, email);
-                list.save();
-                res.json({ success: true });
-            }
-            else{
-                res.status(500).send({ error: 'Invite not found' });
+                List.findById(listInvite.listid, (err, list) => {
+
+                    if (list.ownerid !== userid){
+    
+                        addUserToListMembers(list, userid);
+                        removeUserInvite(list, email);
+                        list.save();
+                        res.json({ success: true });
+                        
+                    }
+
+                });
+
             }
             
         });
@@ -137,7 +136,7 @@ module.exports = function(apiRoutes){
     }
 
     let emailHtml = (webAppUrl, inviteid) => {
-        return `<a href='${webAppUrl}/list/invite/${inviteid}'>Accept Invite</a>`;
+        return `<a href='${webAppUrl}/list/invite/entry/${inviteid}'>Accept Invite</a>`;
     }
 
     let addUserToListMembers = (list, userid) => {
@@ -146,12 +145,9 @@ module.exports = function(apiRoutes){
         });
     }
 
-    let removeUserInvite = (list, email) => {
-        list.invites.forEach(invite => {
-            if (invite.email === email){
-                list.invites.remove({ _id: invite._id });
-                console.log('removed');
-            }
+    let removeUserInvite = (inviteId) => {
+        ListInvite.remove({
+            _id: inviteId
         });
     }
 };
