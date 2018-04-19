@@ -5,54 +5,70 @@ var sparkpost = require("sparkpost");
 var authJwt = require('../auth/jwt.js');
 
 var List = require('../models/list');
+var ListInvite = require('../models/list-invite');
 
 module.exports = function(apiRoutes){
 
     // get all lists
     apiRoutes.post('/list-invite', authJwt.jwtCheck, function(req, res) {
 
-        if (!req.body.listid ||
-            !req.body.email){
+        let listid = req.body.listid;
+        let email = req.body.email;
+        let userid = req.user.sub;
+
+        if (!listid ||
+            !email){
             
             res.status(500).send({ error: 'Missing fields' });
 
         }
         else {
 
-            List.findById(req.body.listid, function(err, list){
+            
+            List.findById(listid, (err, list) => {
 
                 if (err){
                     console.log(err);
                 }
 
-                if (list.ownerid !== req.user.sub){
+                if (list.ownerid !== userid){
                     res.status(500).send({ error: 'Permission denied' });
                 }
                 else{
 
-                    //Add to invites if one doesn't already exist for this email
+                    ListInvite.find((err, listInvites) => {
 
-                    console.log(list.invites.find(invite => invite.email === req.body.email));
+                        let existingListInvite = listInvites.find(invite => invite.listid === listid &&
+                                                                            invite.email === email);
 
-                    if (!list.invites.find(invite => invite.email === req.body.email)){
-                        list.invites.push({
-                            userid: req.user.sub,
-                            email: req.body.email,
-                            date: new Date()
-                        });
-                        list.save();
-                    }
+                        //Add to invites if one doesn't already exist for this email
+                        if (!existingListInvite){
 
-                    var inviteid = list.invites.find((invite) => {
-                        return invite.email === req.body.email
-                    })._id;
-                    
-                    emailInvite(req.body.email, inviteid, () => {
-                        res.json({ success: true });
+                            ListInvite.create({
+                                userid: userid,
+                                listid: listid,
+                                email: email,
+                                date: new Date()
+                            }, (err, listInvite) => {
+                                if (err)
+                                    res.send(err);
+                                
+                                emailInvite(req.body.email, listInvite._id, () => {
+                                    res.json({ success: true });
+                                });
+
+                            });
+
+                        }
+                        else{
+                            emailInvite(existingListInvite.email, existingListInvite._id, () => {
+                                res.json({ success: true });
+                            });
+                        }
+
                     });
-
                 }
-                
+
             });
 
         }
@@ -61,32 +77,31 @@ module.exports = function(apiRoutes){
 
     apiRoutes.post('/list-invite/accept', authJwt.jwtCheck, function(req, res){
 
-        console.log('list-invite accept');
-
-        let listid = req.body.listid;
         let inviteid = req.body.inviteid;
         let email = req.body.email;
         let userid = req.user.sub;
 
-        List.findById(listid, function(err, list){
+        ListInvite.findById(inviteid, function(err, listInvite){
             if (err)
                 res.send(err)
 
-            console.log('user', req.user);
-            console.log('list', list);
-            
-            let invite = list.invites.find(inv => inv._id == inviteid && inv.email == email);
+            console.log('listInvite', listInvite);
 
-            console.log('invite', invite);
+            if (listInvite.email === email){
 
-            if (invite){
-                addUserToListMembers(list, userid);
-                removeUserInvite(list, email);
-                list.save();
-                res.json({ success: true });
-            }
-            else{
-                res.status(500).send({ error: 'Invite not found' });
+                List.findById(listInvite.listid, (err, list) => {
+
+                    if (list.ownerid !== userid){
+    
+                        addUserToListMembers(list, userid);
+                        removeUserInvite(list, email);
+                        list.save();
+                        res.json({ success: true });
+                        
+                    }
+
+                });
+
             }
             
         });
@@ -121,7 +136,7 @@ module.exports = function(apiRoutes){
     }
 
     let emailHtml = (webAppUrl, inviteid) => {
-        return `<a href='${webAppUrl}/list/invite/${inviteid}'>Accept Invite</a>`;
+        return `<a href='${webAppUrl}/list/invite/entry/${inviteid}'>Accept Invite</a>`;
     }
 
     let addUserToListMembers = (list, userid) => {
@@ -130,12 +145,9 @@ module.exports = function(apiRoutes){
         });
     }
 
-    let removeUserInvite = (list, email) => {
-        list.invites.forEach(invite => {
-            if (invite.email === email){
-                list.invites.remove({ _id: invite._id });
-                console.log('removed');
-            }
+    let removeUserInvite = (inviteId) => {
+        ListInvite.remove({
+            _id: inviteId
         });
     }
 };
