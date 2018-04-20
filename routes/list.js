@@ -75,9 +75,6 @@ module.exports = function(apiRoutes){
             }
 
             let userid = req.user.sub;
-
-            console.log(userid);
-
             let member = list.members.find((m) => m.userid === userid && m.userid !== list.ownerid);
 
             if (!member){

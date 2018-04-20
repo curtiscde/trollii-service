@@ -12,7 +12,7 @@ module.exports = function(apiRoutes){
     apiRoutes.post('/item', authJwt.jwtCheck, function(req, res) {
 
         if (!req.body.listid || !req.body.name){
-            res.status(500).send({ error: 'listid and name cannot be blank' });
+            res.status(500).send({ code: 1, error: 'listid and name cannot be blank' });
         }
         else{
 
@@ -22,22 +22,29 @@ module.exports = function(apiRoutes){
                     res.send(err)
 
                 if (!hasAccess){
-                    res.status(500).send({ error: 'Access Denied'});
+                    res.status(500).send({ code: 2, error: 'Access Denied'});
                 }
                 else {
 
                     List.findById(req.body.listid, function(err, list){
 
                         if (err){
-                            console.log(err);
-                        }                        
+                            res.status(500).send({ code: 999, message: 'Generic error'});
+                        }
+                        else if (list.items.find(item => item.name === req.body.name)) {
+                            res.status(500).send({ code: 3, message: 'Item already exists'});
+                        }                  
+                        else{
 
-                        list.items.push({
-                            name: req.body.name
-                        });
-                        list.save();
+                            list.items.push({
+                                name: req.body.name
+                            });
+                            list.save();
+    
+                            res.json(listHelper.publicModel(list, req.user.sub));
 
-                        res.json(list);
+                        }      
+
                     });
 
                 }
@@ -65,7 +72,7 @@ module.exports = function(apiRoutes){
                 List.findById(req.params.listid, function(err, list){
                     list.items.remove({_id: req.params.itemid});
                     list.save();
-                    res.json(list);
+                    res.json(listHelper.publicModel(list, req.user.sub));
                 });
 
             }

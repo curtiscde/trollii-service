@@ -96,7 +96,9 @@ module.exports = function(apiRoutes){
                         addUserToListMembers(list, userid);
                         removeUserInvite(list, email);
                         list.save();
-                        res.json({ success: true });
+                        res.json({
+                            listid: list._id
+                        });
                         
                     }
 
