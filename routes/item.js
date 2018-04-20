@@ -37,7 +37,7 @@ module.exports = function(apiRoutes){
                         });
                         list.save();
 
-                        res.json(list);
+                        res.json(listHelper.publicModel(list, req.user.sub));
                     });
 
                 }
@@ -65,7 +65,7 @@ module.exports = function(apiRoutes){
                 List.findById(req.params.listid, function(err, list){
                     list.items.remove({_id: req.params.itemid});
                     list.save();
-                    res.json(list);
+                    res.json(listHelper.publicModel(list, req.user.sub));
                 });
 
             }
