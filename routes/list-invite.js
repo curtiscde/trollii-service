@@ -7,6 +7,8 @@ var authJwt = require('../auth/jwt.js');
 var List = require('../models/list');
 var ListInvite = require('../models/list-invite');
 
+var listInviteHelper = require('../helpers/list-invite');
+
 module.exports = function(apiRoutes){
 
     // get all lists
@@ -83,11 +85,9 @@ module.exports = function(apiRoutes){
 
         ListInvite.findById(inviteid, function(err, listInvite){
             if (err)
-                res.send(err)
+                res.send(err);
 
-            console.log('listInvite', listInvite);
-
-            if (listInvite.email === email){
+            if (listInviteHelper.validListInviteEmail(listInvite, email)){
 
                 List.findById(listInvite.listid, (err, list) => {
 
