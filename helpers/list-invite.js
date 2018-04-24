@@ -1,5 +1,7 @@
 let validListInviteEmail = (listInvite, email) => {
-    return listInvite.email === email;
+    return listInvite &&
+            listInvite.email &&
+            listInvite.email.toLowerCase() === email.toLowerCase();
 };
 
 module.exports = {
