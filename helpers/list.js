@@ -1,3 +1,4 @@
+var itemdata = require('../data/item');
 
 let getUserLists = (lists, userid) => (
     lists.filter(function(list){
@@ -14,7 +15,13 @@ let publicModel = (list, userid) => (
         _id: list._id,
         isowner: (list.ownerid === userid),
         name: list.name,
-        items: list.items
+        items: list.items.map(item => {
+            let itemDataEmoji = itemdata.items.find(itemm => itemm.name === item.name);
+            return {
+                name: item.name,
+                emojicode: itemDataEmoji ? itemDataEmoji.emojiCode : null
+            }
+        })
     }
 )
 
