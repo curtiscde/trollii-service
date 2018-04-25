@@ -19,7 +19,7 @@ let publicModel = (list, userid) => (
             let itemDataEmoji = itemdata.items.find(itemm => itemm.name === item.name);
             return {
                 name: item.name,
-                emojicode: itemDataEmoji ? itemDataEmoji.emojiCode : null
+                emoji: itemDataEmoji ? itemDataEmoji.emoji : null
             }
         })
     }

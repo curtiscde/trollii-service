@@ -1,12 +1,12 @@
 let items = [
-    { name: 'Apples', emojiCode: 'apple' },
-    { name: 'Bananas', emojiCode: 'banana' },
-    { name: 'Cat food', emojiCode: 'cat' },
-    { name: 'Dog food', emojiCode: 'dog' },
-    { name: 'Eggs', emojiCode: 'egg' },
-    { name: 'Honey', emojiCode: 'honey_pot' },
-    { name: 'Pears', emojiCode: 'pear' },
-    { name: 'Rice', emojiCode: 'rice' }
+    { name: 'Apples', emoji: '🍎' },
+    { name: 'Bananas', emoji: '🍌' },
+    { name: 'Cat food', emoji: '🐱' },
+    { name: 'Dog food', emoji: '🐶' },
+    { name: 'Eggs', emoji: '🥚' },
+    { name: 'Honey', emoji: '🍯' },
+    { name: 'Pears', emoji: '🍐' },
+    { name: 'Rice', emoji: '🍚' }
 ];
 
 module.exports = {
