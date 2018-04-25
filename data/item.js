@@ -3,6 +3,7 @@ let items = [
     { name: 'Avocado', emoji: '🥑' },
     { name: 'Bananas', emoji: '🍌' },
     { name: 'Cat food', emoji: '🐱' },
+    { name: 'Cheese', emoji: '🧀' },
     { name: 'Coffee', emoji: '☕️' },
     { name: 'Dog food', emoji: '🐶' },
     { name: 'Eggs', emoji: '🥚' },

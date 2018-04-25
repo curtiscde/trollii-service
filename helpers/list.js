@@ -16,8 +16,8 @@ let publicModel = (list, userid) => (
         isowner: (list.ownerid === userid),
         name: list.name,
         items: list.items.map(item => {
-            let itemDataEmoji = itemdata.items.find(itemm => itemm.name === item.name);
             return {
+                _id: item._id,
                 name: item.name,
                 emoji: emojiByItemName(itemdata, item.name)
             }
