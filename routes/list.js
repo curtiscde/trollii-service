@@ -16,8 +16,6 @@ module.exports = function(apiRoutes){
             if (err)
                 res.send(err)
 
-            console.log('lists', lists);
-
             res.json(listHelper.getUserLists(lists, req.user.sub));
         });
     });
