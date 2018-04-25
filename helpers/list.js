@@ -19,14 +19,20 @@ let publicModel = (list, userid) => (
             let itemDataEmoji = itemdata.items.find(itemm => itemm.name === item.name);
             return {
                 name: item.name,
-                emoji: itemDataEmoji ? itemDataEmoji.emoji : null
+                emoji: emojiByItemName(itemdata, item.name)
             }
         })
     }
 )
 
+let emojiByItemName = (itemdata, name) => {
+    let itemDataEmoji = itemdata.items.find(itemm => itemm.name.toLowerCase() === name.toLowerCase());
+    return itemDataEmoji ? itemDataEmoji.emoji : null;
+}
+
 module.exports = {
     getUserLists,
     hasUserListAccess,
-    publicModel
+    publicModel,
+    emojiByItemName
 };
