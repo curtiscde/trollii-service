@@ -105,6 +105,9 @@ module.exports = function(apiRoutes){
                 });
 
             }
+            else{
+                res.status(500).send({ code: 1, error: 'Invalid List Invite'});
+            }
             
         });
     });
