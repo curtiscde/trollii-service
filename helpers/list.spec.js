@@ -2,14 +2,37 @@ var assert = require('assert');
 
 var listHelper = require('./list');
 
-var itemdata = {
-    items: [
-        { name: 'Apples', emoji: '🍎' },
-        { name: 'Avocado', emoji: '🥑' }
-    ]
-};
+describe('List Helper - hasUserListAccess', function(){
 
-describe('List Helper', function(){
+    let list = {
+        members: [
+            { userid: 'foo' },
+            { userid: 'bar' }
+        ]
+    }
+
+    it('returns true if userid is contained in members', function(){
+        assert.equal(
+            listHelper.hasUserListAccess(list, 'foo')
+        , true);
+    });
+
+    it('returns false if userid is not contained in members', function(){
+        assert.equal(
+            listHelper.hasUserListAccess(list, 'baz')
+        , false);
+    });
+
+});
+
+describe('List Helper - emojiByItemName', function(){
+
+    var itemdata = {
+        items: [
+            { name: 'Apples', emoji: '🍎' },
+            { name: 'Avocado', emoji: '🥑' }
+        ]
+    };
 
     it('returns null if item name does not have matching emoji', function(){
         assert.equal(listHelper.emojiByItemName(itemdata, 'hello'), null);
