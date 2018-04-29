@@ -17,14 +17,17 @@ process.env.webAppUrl
 
 ## End Points
 
-### User
-
-```
-/api/user/profile
-```
+### GET /api/user
 
 #### Error Codes
 
- - 1: Not authorised
- - 2: User not found
+ - 1: User not found
+ - 99: Unknown error
+
+
+### POST /api/user
+
+#### Error Codes
+
+ - 1: Missing fields
  - 99: Unknown error
