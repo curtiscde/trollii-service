@@ -1,6 +1,5 @@
 var mongoose = require('mongoose'); 
 
-var Item = require('../models/item');
 var List = require('../models/list');
 
 var authJwt = require('../auth/jwt.js');
