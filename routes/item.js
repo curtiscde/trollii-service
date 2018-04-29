@@ -10,12 +10,14 @@ module.exports = function(apiRoutes){
 
     apiRoutes.post('/item', authJwt.jwtCheck, function(req, res) {
 
+        let userid = req.user.sub;
+
         if (!req.body.listid || !req.body.name){
             res.status(500).send({ code: 1, error: 'listid and name cannot be blank' });
         }
         else{
 
-            checkUserHasListAccess(req.body.listid, req.user.sub, function(err, hasAccess){
+            checkUserHasListAccess(req.body.listid, userid, function(err, hasAccess){
 
                 if (err)
                     res.send(err)
@@ -36,11 +38,13 @@ module.exports = function(apiRoutes){
                         else{
 
                             list.items.push({
-                                name: req.body.name
+                                name: req.body.name,
+                                userid: userid,
+                                date: new Date()
                             });
                             list.save();
     
-                            res.json(listHelper.publicModel(list, req.user.sub));
+                            res.json(listHelper.publicModel(list, userid));
 
                         }      
 
