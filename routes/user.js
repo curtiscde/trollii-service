@@ -18,7 +18,7 @@ module.exports = function(apiRoutes){
                     res.json(user);    
                 }
                 else {
-                    res.status(500).send({code: 1, error: 'User not found'});
+                    res.json();
                 }
             }
         });

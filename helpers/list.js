@@ -21,6 +21,11 @@ let publicModel = (list, userid) => (
                 name: item.name,
                 emoji: emojiByItemName(itemdata, item.name)
             }
+        }),
+        members: list.members.map(member => {
+            return {
+                userid: member.userid
+            }
         })
     }
 )

@@ -49,6 +49,7 @@ require('./routes/item.js')(apiRoutes);
 require('./routes/list-invite.js')(apiRoutes);
 require('./routes/list.js')(apiRoutes);
 require('./routes/user.js')(apiRoutes);
+require('./routes/version.js')(apiRoutes);
 
 app.use('/api', apiRoutes);
 

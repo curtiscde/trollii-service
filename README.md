@@ -21,7 +21,6 @@ process.env.webAppUrl
 
 #### Error Codes
 
- - 1: User not found
  - 99: Unknown error
 
 
