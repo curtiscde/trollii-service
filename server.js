@@ -15,7 +15,6 @@ var methodOverride = require('method-override'); // simulate DELETE and PUT (exp
 if (!process.env.prod){
     var env = require('./env.js');
 }
-var authConfig = require('./config/auth.js')(process.env);
 
 var port = process.env.PORT || 8080;
 
@@ -24,10 +23,6 @@ mongoose.connect(process.env.dbconnection)
     console.log('DB connected');
 })
 .catch(console.log);
-
-app.set('superSecret', authConfig.secret);
-
-require('./config/passport')(passport); // pass passport for configuration
 
 app.use(morgan('dev'));                                         // log every request to the console
 app.use(bodyParser.urlencoded({'extended':'true'}));            // parse application/x-www-form-urlencoded

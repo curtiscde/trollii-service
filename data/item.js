@@ -1,4 +1,5 @@
 let items = [
+    { name: 'Ale', emoji: '🍺' },
     { name: 'Apples', emoji: '🍎' },
     { name: 'Avocado', emoji: '🥑' },
     { name: 'Baby Formula', emoji: '🍼' },
@@ -73,6 +74,7 @@ let items = [
     { name: 'Ice Cream', emoji: '🍨' },
     { name: 'Ice Cream Cones', emoji: '🍦' },
     { name: 'Kiwis', emoji: '🥝' },
+    { name: 'Lager', emoji: '🍺' },
     { name: 'Lamb', emoji: '🐑' },
     { name: 'Lemon', emoji: '🍋' },
     { name: 'Lemonade', emoji: '🥤' },
@@ -108,6 +110,7 @@ let items = [
     { name: 'Potatoes', emoji: '🥔' },
     { name: 'Pretzel', emoji: '🥨' },
     { name: 'Prawn', emoji: '🦐' },
+    { name: 'Pumpkin', emoji: '🎃' },
     { name: 'Razors', emoji: '🧔' },
     { name: 'Rice', emoji: '🍚' },
     { name: 'Rinse Aid', emoji: '🍽' },
