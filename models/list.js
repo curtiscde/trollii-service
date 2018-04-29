@@ -4,7 +4,9 @@ module.exports = mongoose.model('List', {
     ownerid: String,
     name : String,
     items : [{
-        name : String
+        name : String,
+        userid: String,
+        date: Date
     }],
     members: [{
         userid: String

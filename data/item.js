@@ -25,6 +25,7 @@ let items = [
     { name: 'Carrots', emoji: '🥕' },
     { name: 'Cat food', emoji: '🐱' },
     { name: 'Cat Litter', emoji: '🐈' },
+    { name: 'Celery', emoji: '🥗' },
     { name: 'Cereal', emoji: '🥣' },
     { name: 'Champagne', emoji: '🍾' },
     { name: 'Cheese', emoji: '🧀' },
