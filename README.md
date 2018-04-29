@@ -14,3 +14,17 @@ process.env.noreplyemail
 
 process.env.webAppUrl
 ```
+
+## End Points
+
+### User
+
+```
+/api/user/profile
+```
+
+#### Error Codes
+
+ - 1: Not authorised
+ - 2: User not found
+ - 99: Unknown error
