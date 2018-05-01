@@ -2,6 +2,7 @@ var requestPromise = require('request-promise');
 
 let getToken = () => {
     return requestPromise({
+        method: 'POST',
         url: `${process.env.auth0Domain}/oauth/token`,
         headers: {
             'content-type': 'application/json'

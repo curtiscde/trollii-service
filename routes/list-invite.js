@@ -84,57 +84,63 @@ module.exports = function(apiRoutes){
         let email = req.body.email;
         let userid = req.user.sub;
 
-        auth0Helper.getUser(userid).then(data => {
+        auth0Helper.getToken().then(dataToken => {
 
-            if (data){
+            console.log(dataToken);
 
-                let auth0data = JSON.parse(data);
+            auth0Helper.getUser(userid).then(data => {
 
-                let auth0User = {
-                    email: auth0data.email
-                };
+                if (data){
 
-                console.log('auth0User', auth0User);
-                res.json(auth0User);
-                return;
+                    let auth0data = JSON.parse(data);
 
-                ListInvite.findById(inviteid, function(err, listInvite){
-                    if (err)
-                        res.send(err);
-        
-                    if (listInviteHelper.validListInviteEmail(listInvite, email)){
-        
-                        List.findById(listInvite.listid, (err, list) => {
-        
-                            if (list.ownerid !== userid){
+                    let auth0User = {
+                        email: auth0data.email
+                    };
+
+                    console.log('auth0User', auth0User);
+                    res.json(auth0User);
+                    return;
+
+                    ListInvite.findById(inviteid, function(err, listInvite){
+                        if (err)
+                            res.send(err);
             
-                                addUserToListMembers(list, userid);
-                                removeUserInvite(list, email);
-                                list.save();
-                                res.json({
-                                    listid: list._id
-                                });
-                                
-                            }
-        
-                        });
-        
-                    }
-                    else{
-                        res.status(500).send({ code: 1, error: 'Invalid List Invite'});
-                    }
-                    
-                });
+                        if (listInviteHelper.validListInviteEmail(listInvite, email)){
+            
+                            List.findById(listInvite.listid, (err, list) => {
+            
+                                if (list.ownerid !== userid){
+                
+                                    addUserToListMembers(list, userid);
+                                    removeUserInvite(list, email);
+                                    list.save();
+                                    res.json({
+                                        listid: list._id
+                                    });
+                                    
+                                }
+            
+                            });
+            
+                        }
+                        else{
+                            res.status(500).send({ code: 1, error: 'Invalid List Invite'});
+                        }
+                        
+                    });
 
-            }
-            else{
-                console.log('data', data);
-                res.status(500).send({ code: 99, error: ''});
-            }
+                }
+                else{
+                    console.log('data', data);
+                    res.status(500).send({ code: 99, error: ''});
+                }
 
 
 
-        });
+            });
+ 
+        })
         
 
     });
