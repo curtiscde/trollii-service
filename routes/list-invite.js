@@ -88,11 +88,10 @@ module.exports = function(apiRoutes){
 
             if (data){
 
-                console.log('dataaa', data);
-                console.log('dataaaenmail', data.email);
+                let auth0data = JSON.parse(data);
 
                 let auth0User = {
-                    email: data.email
+                    email: auth0data.email
                 };
 
                 console.log('auth0User', auth0User);
