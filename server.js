@@ -13,7 +13,7 @@ var methodOverride = require('method-override'); // simulate DELETE and PUT (exp
 // configuration =================
 
 if (!process.env.prod){
-    var env = require('./env.js');
+    var env = require('./config/env.js');
 }
 
 var port = process.env.PORT || 8080;
