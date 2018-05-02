@@ -1,3 +1,5 @@
+var auth0Helper = require('./auth0');
+
 var itemdata = require('../data/item');
 
 let getUserLists = (lists, userid) => (
@@ -35,15 +37,42 @@ let emojiByItemName = (itemdata, name) => {
     return itemDataEmoji ? itemDataEmoji.emoji : null;
 }
 
-let listModel = (lists, auth0AccessToken) => {
+let listModel = (auth0AccessToken, lists, thisUserid) => {
+    return new Promise((resolve, reject) => {
+        let memberUserIds = getListsMembers(lists);
+        let userPromises = [];
 
-    let memberUserIds = getListsMembers(lists);
+        memberUserIds.forEach(userId => {
+            userPromises.push(auth0Helper.getUser(auth0AccessToken, userId));
+        });
 
-    // memberUserIds.forEach(userId => {
-    //     console.log(userid);
-    // });
+        Promise.all(userPromises).then(auth0Users => {
+            
+            var model = lists.map(list => {
+                return {
+                    _id: list._id,
+                    isowner: (list.ownerid === thisUserid),
+                    name: list.name,
+                    items: list.items.map(item => {
+                        return {
+                            _id: item._id,
+                            name: item.name,
+                            emoji: emojiByItemName(itemdata, item.name)
+                        }
+                    }),
+                    members: list.members.map(member => {
+                        let auth0User = JSON.parse(auth0Users.find(u => JSON.parse(u).user_id === member.userid));
+                        return {
+                            userid: member.userid,
+                            picture: auth0User.picture,
+                        }
+                    })
+                };
+            });
 
-    return lists;
+            resolve(model);
+        });
+    });
 };
 
 let getListsMembers = (lists) => {

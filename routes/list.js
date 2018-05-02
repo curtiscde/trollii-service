@@ -4,20 +4,24 @@ var List = require('../models/list');
 
 var authJwt = require('../auth/jwt.js');
 
+var auth0Helper = require('../helpers/auth0');
 var listHelper = require('../helpers/list');
 
 module.exports = function(apiRoutes){
 
     // get all lists
     apiRoutes.get('/list', authJwt.jwtCheck, function(req, res) {
-
         List.find({
             $or:[
                 { 'ownerid': req.user.sub },
                 { 'members.userid': req.user.sub }
             ]
         }, (err, lists) => {
-            res.json(listHelper.listModel(lists, 'goo'));
+            auth0Helper.getAccessToken().then(accessToken => {
+                listHelper.listModel(accessToken, lists, req.user.sub).then(model => {
+                  res.json(model);  
+                });
+            });
         });
     });
 
