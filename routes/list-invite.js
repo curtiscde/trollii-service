@@ -105,68 +105,56 @@ module.exports = function(apiRoutes){
                 res.status(500).send({ code: 99, error: ''});;
               }
 
-              console.log('response.access_token', response.access_token);
+                let accessToken = response.access_token;
 
-              let accessToken = response.access_token;
+                auth0Helper.getUser(accessToken, userid).then(data => {
 
-              res.send();
-            }
-          );
+                    if (data){
         
-
-        return;
-
-        console.log(dataToken);
-
-        auth0Helper.getUser(userid).then(data => {
-
-            if (data){
-
-                let auth0data = JSON.parse(data);
-
-                let auth0User = {
-                    email: auth0data.email
-                };
-
-                console.log('auth0User', auth0User);
-                res.json(auth0User);
-                return;
-
-                ListInvite.findById(inviteid, function(err, listInvite){
-                    if (err)
-                        res.send(err);
+                        let auth0data = JSON.parse(data);
         
-                    if (listInviteHelper.validListInviteEmail(listInvite, email)){
+                        let auth0User = {
+                            email: auth0data.email
+                        };
         
-                        List.findById(listInvite.listid, (err, list) => {
-        
-                            if (list.ownerid !== userid){
-            
-                                addUserToListMembers(list, userid);
-                                removeUserInvite(list, email);
-                                list.save();
-                                res.json({
-                                    listid: list._id
+                        ListInvite.findById(inviteid, function(err, listInvite){
+                            if (err)
+                                res.send(err);
+                
+                            if (listInviteHelper.validListInviteEmail(listInvite, email)){
+                
+                                List.findById(listInvite.listid, (err, list) => {
+                
+                                    if (list.ownerid !== userid){
+                    
+                                        addUserToListMembers(list, userid);
+                                        removeUserInvite(list, email);
+                                        list.save();
+                                        res.json({
+                                            listid: list._id
+                                        });
+                                        
+                                    }
+                
                                 });
-                                
+                
                             }
-        
+                            else{
+                                res.status(500).send({ code: 1, error: 'Invalid List Invite'});
+                            }
+                            
                         });
         
                     }
                     else{
-                        res.status(500).send({ code: 1, error: 'Invalid List Invite'});
+                        console.log('data', data);
+                        res.status(500).send({ code: 99, error: ''});
                     }
-                    
+        
                 });
-
+              
             }
-            else{
-                console.log('data', data);
-                res.status(500).send({ code: 99, error: ''});
-            }
-
-        });
+          );
         
 
     });

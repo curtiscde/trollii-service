@@ -1,31 +1,14 @@
 var requestPromise = require('request-promise');
 
-let getToken = () => {
+let getUser = (accessToken, userid) => {
     return requestPromise({
-        method: 'POST',
-        url: `${process.env.auth0Domain}/oauth/token`,
+        url: `https://${process.env.auth0Domain}/api/v2/users/${userid}`,
         headers: {
-            'content-type': 'application/json'
-        },
-        data: {
-            'grant_type': 'client_credentials',
-            'client_id': process.env.auth0ClientId,
-            'client_secret': process.env.auth0ClientSecret,
-            'audience': `${process.env.auth0Domain}/api/v2/`
-        }
-    });
-}
-
-let getUser = (userid) => {
-    return requestPromise({
-        url: `${process.env.auth0Domain}/api/v2/users/${userid}`,
-        headers: {
-            'authorization': `Bearer ${process.env.auth0Token}`
+            'authorization': `Bearer ${accessToken}`
         }
     });
 }
 
 module.exports = {
-    getToken,
     getUser
 }
