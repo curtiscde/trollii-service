@@ -28,16 +28,36 @@ let publicModel = (list, userid) => (
             }
         })
     }
-)
+);
 
 let emojiByItemName = (itemdata, name) => {
     let itemDataEmoji = itemdata.items.find(itemm => itemm.name.toLowerCase() === name.toLowerCase());
     return itemDataEmoji ? itemDataEmoji.emoji : null;
 }
 
+let listModel = (lists, auth0AccessToken) => {
+
+    let memberUserIds = getListsMembers(lists);
+
+    // memberUserIds.forEach(userId => {
+    //     console.log(userid);
+    // });
+
+    return lists;
+};
+
+let getListsMembers = (lists) => {
+    var userids = lists.map(list => list.members.map(member => member.userid));
+    return [].concat.apply([], userids).filter(function(elem, index, self) {
+        return index == self.indexOf(elem);
+    });
+};
+
 module.exports = {
     getUserLists,
     hasUserListAccess,
     publicModel,
-    emojiByItemName
+    emojiByItemName,
+    listModel,
+    getListsMembers
 };

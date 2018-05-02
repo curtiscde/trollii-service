@@ -10,11 +10,14 @@ module.exports = function(apiRoutes){
 
     // get all lists
     apiRoutes.get('/list', authJwt.jwtCheck, function(req, res) {
-        List.find(function(err, lists) {
-            if (err)
-                res.send(err)
 
-            res.json(listHelper.getUserLists(lists, req.user.sub));
+        List.find({
+            $or:[
+                { 'ownerid': req.user.sub },
+                { 'members.userid': req.user.sub }
+            ]
+        }, (err, lists) => {
+            res.json(listHelper.listModel(lists, 'goo'));
         });
     });
 
