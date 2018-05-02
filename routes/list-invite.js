@@ -95,50 +95,49 @@ module.exports = function(apiRoutes){
                 
             auth0Helper.getUser(access_token, userid).then(data => {
 
-                if (data){
-    
-                    let auth0data = JSON.parse(data);
-    
-                    let auth0User = {
-                        email: auth0data.email
-                    };
-
-                    res.json(auth0User);
-                    return;
-    
-                    ListInvite.findById(inviteid, function(err, listInvite){
-                        if (err)
-                            res.send(err);
-            
-                        if (listInviteHelper.validListInviteEmail(listInvite, auth0User.email)){
-            
-                            List.findById(listInvite.listid, (err, list) => {
-            
-                                if (list.ownerid !== userid){
-                
-                                    addUserToListMembers(list, userid);
-                                    removeUserInvite(list, auth0User.email);
-                                    list.save();
-                                    res.json({
-                                        listid: list._id
-                                    });
-                                    
-                                }
-            
-                            });
-            
-                        }
-                        else{
-                            res.status(500).send({ code: 1, error: 'Invalid List Invite'});
-                        }
-                        
-                    });
-    
-                }
-                else{
-                    console.log('data', data);
+                if (!data){
                     res.status(500).send({ code: 99, error: ''});
+                    return;
                 }
+
+    
+                let auth0data = JSON.parse(data);
+
+                let auth0User = {
+                    email: auth0data.email
+                };
+
+                res.json(auth0User);
+                return;
+
+                ListInvite.findById(inviteid, function(err, listInvite){
+                    if (err)
+                        res.send(err);
+        
+                    if (listInviteHelper.validListInviteEmail(listInvite, auth0User.email)){
+        
+                        List.findById(listInvite.listid, (err, list) => {
+        
+                            if (list.ownerid !== userid){
+            
+                                addUserToListMembers(list, userid);
+                                removeUserInvite(list, auth0User.email);
+                                list.save();
+                                res.json({
+                                    listid: list._id
+                                });
+                                
+                            }
+        
+                        });
+        
+                    }
+                    else{
+                        res.status(500).send({ code: 1, error: 'Invalid List Invite'});
+                    }
+                    
+                });
+
     
             });
         });
