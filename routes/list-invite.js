@@ -81,9 +81,7 @@ module.exports = function(apiRoutes){
     apiRoutes.post('/list-invite/accept', authJwt.jwtCheck, function(req, res){
 
         let inviteid = req.body.inviteid;
-        let email = req.body.email;
         let userid = req.user.sub;
-
 
         var AuthenticationClient = require('auth0').AuthenticationClient;
 
@@ -93,8 +91,8 @@ module.exports = function(apiRoutes){
             clientSecret: process.env.auth0ClientSecret
         });
 
-        auth0Helper.getAccessToken(access_token => {
-            console.log('access_token', access_token);
+        auth0Helper.getAccessToken().then(access_token => {
+                
             auth0Helper.getUser(access_token, userid).then(data => {
 
                 if (data){
@@ -112,14 +110,14 @@ module.exports = function(apiRoutes){
                         if (err)
                             res.send(err);
             
-                        if (listInviteHelper.validListInviteEmail(listInvite, email)){
+                        if (listInviteHelper.validListInviteEmail(listInvite, auth0User.email)){
             
                             List.findById(listInvite.listid, (err, list) => {
             
                                 if (list.ownerid !== userid){
                 
                                     addUserToListMembers(list, userid);
-                                    removeUserInvite(list, email);
+                                    removeUserInvite(list, auth0User.email);
                                     list.save();
                                     res.json({
                                         listid: list._id
