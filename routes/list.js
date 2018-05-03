@@ -31,15 +31,14 @@ module.exports = function(apiRoutes){
                 members: [{
                     userid: req.user.sub
                 }]
-            }, function(err, todo) {
+            }, function(err, list) {
                 if (err)
                     res.send(err);
 
-                // get and return all the lists after you create another
-                List.find(function(err, lists) {
-                    if (err)
-                        res.send(err)
-                    res.json(listHelper.getUserLists(lists, req.user.sub));
+                auth0Helper.getAccessToken().then(accessToken => {
+                    getUserLists(req.user.sub, accessToken).then(model => {
+                        res.json(model);
+                    })
                 });
             });
 
@@ -56,11 +55,10 @@ module.exports = function(apiRoutes){
             if (err)
                 res.send(err);
 
-            // get and return all the lists after you delete another
-            List.find(function(err, lists) {
-                if (err)
-                    res.send(err)
-                res.json(listHelper.getUserLists(lists, req.user.sub));
+            auth0Helper.getAccessToken().then(accessToken => {
+                getUserLists(req.user.sub, accessToken).then(model => {
+                    res.json(model);
+                })
             });
         });
     });
