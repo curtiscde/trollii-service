@@ -107,9 +107,6 @@ module.exports = function(apiRoutes){
                     email: auth0data.email
                 };
 
-                res.json(auth0User);
-                return;
-
                 ListInvite.findById(inviteid, function(err, listInvite){
                     if (err)
                         res.send(err);
@@ -160,13 +157,12 @@ module.exports = function(apiRoutes){
             }]
         })
         .then(data => {
-            console.log('Email sent');
+            console.log(`Email sent to ${email}`);
             console.log(data);
-
             cb();
         })
         .catch(err => {
-            console.log('Email could not be sent');
+            console.log('Email could not be sent to ${email}');
             console.log(err)
         });
 
