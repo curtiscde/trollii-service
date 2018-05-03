@@ -19,7 +19,6 @@ let getAccessToken = () => {
                 function(err, response) {
                 if (err) {
                     reject();
-                    console.log('err', err);
                 }
                 else{
                     resolve(response.access_token);

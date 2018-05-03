@@ -41,7 +41,10 @@ let listModel = (auth0AccessToken, lists, thisUserid) => {
             userPromises.push(auth0Helper.getUser(auth0AccessToken, userId));
         });
 
-        Promise.all(userPromises).then(auth0Users => {
+        //Return all promises as success, even if auth0 could not find the user
+        Promise.all(userPromises.map(p => p.catch(() => undefined))).then(auth0Users => {
+
+            console.log(auth0Users);
             
             var model = lists.map(list => {
                 return {
@@ -79,10 +82,11 @@ let emojiByItemName = (itemdata, name) => {
 }
 
 let memberModel = (member, auth0Users) => {
-    let auth0User = JSON.parse(auth0Users.find(u => JSON.parse(u).user_id === member.userid));
+    let auth0User = auth0Users.find(u => u && JSON.parse(u).user_id === member.userid);
+    console.log(auth0User);
     return {
         userid: member.userid,
-        picture: auth0User.picture,
+        picture: auth0User && JSON.parse(auth0User).picture,
     };
 }
 
