@@ -9,7 +9,7 @@ var listHelper = require('../helpers/list');
 
 module.exports = function(apiRoutes){
 
-    apiRoutes.post('/item', authJwt.jwtCheck, function(req, res) {
+    apiRoutes.post('/item', authJwt.jwtCheck, auth0Helper.getAccessToken, function(req, res) {
 
         let userid = req.user.sub;
 
@@ -28,29 +28,25 @@ module.exports = function(apiRoutes){
                 }
                 else {
 
-                    auth0Helper.getAccessToken().then(auth0AccessToken => {
+                    List.findById(req.body.listid, function(err, list){
 
-                        List.findById(req.body.listid, function(err, list){
+                        if (err){
+                            res.status(500).send({ code: 999, message: 'Generic error'});
+                        }
+                        else if (list.items.find(item => item.name === req.body.name)) {
+                            res.status(500).send({ code: 3, message: 'Item already exists'});
+                        }                  
+                        else{
 
-                            if (err){
-                                res.status(500).send({ code: 999, message: 'Generic error'});
-                            }
-                            else if (list.items.find(item => item.name === req.body.name)) {
-                                res.status(500).send({ code: 3, message: 'Item already exists'});
-                            }                  
-                            else{
-
-                                list.items.push({
-                                    name: req.body.name,
-                                    userid: userid,
-                                    date: new Date()
-                                });
-                                list.save();
-        
-                                listHelper.listModel(auth0AccessToken, [list]).then(model => res.json(model[0]));
-                            }      
-
-                        });
+                            list.items.push({
+                                name: req.body.name,
+                                userid: userid,
+                                date: new Date()
+                            });
+                            list.save();
+    
+                            listHelper.listModel(req.auth0AccessToken, [list]).then(model => res.json(model[0]));
+                        }      
 
                     });
 
@@ -62,7 +58,7 @@ module.exports = function(apiRoutes){
 
     });
 
-    apiRoutes.delete('/item/:listid/:itemid', authJwt.jwtCheck, function(req, res) {
+    apiRoutes.delete('/item/:listid/:itemid', authJwt.jwtCheck, auth0Helper.getAccessToken, function(req, res) {
        
         checkUserHasListAccess(req.params.listid, req.user.sub, function(err, hasAccess){
 
@@ -74,14 +70,10 @@ module.exports = function(apiRoutes){
             }
             else {
 
-                auth0Helper.getAccessToken().then(auth0AccessToken => {
-
-                    List.findById(req.params.listid, function(err, list){
-                        list.items.remove({_id: req.params.itemid});
-                        list.save();
-                        listHelper.listModel(auth0AccessToken, [list]).then(model => res.json(model[0]));
-                    });
-
+                List.findById(req.params.listid, function(err, list){
+                    list.items.remove({_id: req.params.itemid});
+                    list.save();
+                    listHelper.listModel(req.auth0AccessToken, [list]).then(model => res.json(model[0]));
                 });
 
             }
