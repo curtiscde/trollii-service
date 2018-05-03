@@ -11,21 +11,13 @@ module.exports = function(apiRoutes){
 
     // get all lists
     apiRoutes.get('/list', authJwt.jwtCheck, function(req, res) {
-        List.find({
-            $or:[
-                { 'ownerid': req.user.sub },
-                { 'members.userid': req.user.sub }
-            ]
-        }, (err, lists) => {
-            auth0Helper.getAccessToken().then(accessToken => {
-                listHelper.listModel(accessToken, lists, req.user.sub).then(model => {
-                  res.json(model);  
-                });
-            });
+        auth0Helper.getAccessToken().then(accessToken => {
+            getUserLists(req.user.sub, accessToken).then(model => {
+                res.json(model);
+            })
         });
     });
 
-    // create list and send back all lists after creation
     apiRoutes.post('/list', authJwt.jwtCheck, function(req, res) {
 
         if (!req.body.name){
@@ -55,7 +47,6 @@ module.exports = function(apiRoutes){
 
     });
 
-    // delete a list
     apiRoutes.delete('/list/:list_id', authJwt.jwtCheck, function(req, res) {
 
         List.remove({
@@ -98,3 +89,18 @@ module.exports = function(apiRoutes){
     });
 
 };
+
+let getUserLists = (userid, accessToken) => {
+    return new Promise((resolve, reject) => {
+        List.find({
+            $or:[
+                { 'ownerid': userid },
+                { 'members.userid': userid }
+            ]
+        }, (err, lists) => {
+            listHelper.listModel(accessToken, lists, userid).then(model => {
+                resolve(model); 
+            });
+        });
+    });
+}
