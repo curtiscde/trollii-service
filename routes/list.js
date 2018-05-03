@@ -4,21 +4,20 @@ var List = require('../models/list');
 
 var authJwt = require('../auth/jwt.js');
 
+var auth0Helper = require('../helpers/auth0');
 var listHelper = require('../helpers/list');
 
 module.exports = function(apiRoutes){
 
     // get all lists
     apiRoutes.get('/list', authJwt.jwtCheck, function(req, res) {
-        List.find(function(err, lists) {
-            if (err)
-                res.send(err)
-
-            res.json(listHelper.getUserLists(lists, req.user.sub));
+        auth0Helper.getAccessToken().then(accessToken => {
+            getUserLists(req.user.sub, accessToken).then(model => {
+                res.json(model);
+            })
         });
     });
 
-    // create list and send back all lists after creation
     apiRoutes.post('/list', authJwt.jwtCheck, function(req, res) {
 
         if (!req.body.name){
@@ -32,15 +31,14 @@ module.exports = function(apiRoutes){
                 members: [{
                     userid: req.user.sub
                 }]
-            }, function(err, todo) {
+            }, function(err, list) {
                 if (err)
                     res.send(err);
 
-                // get and return all the lists after you create another
-                List.find(function(err, lists) {
-                    if (err)
-                        res.send(err)
-                    res.json(listHelper.getUserLists(lists, req.user.sub));
+                auth0Helper.getAccessToken().then(accessToken => {
+                    getUserLists(req.user.sub, accessToken).then(model => {
+                        res.json(model);
+                    })
                 });
             });
 
@@ -48,7 +46,6 @@ module.exports = function(apiRoutes){
 
     });
 
-    // delete a list
     apiRoutes.delete('/list/:list_id', authJwt.jwtCheck, function(req, res) {
 
         List.remove({
@@ -58,11 +55,10 @@ module.exports = function(apiRoutes){
             if (err)
                 res.send(err);
 
-            // get and return all the lists after you delete another
-            List.find(function(err, lists) {
-                if (err)
-                    res.send(err)
-                res.json(listHelper.getUserLists(lists, req.user.sub));
+            auth0Helper.getAccessToken().then(accessToken => {
+                getUserLists(req.user.sub, accessToken).then(model => {
+                    res.json(model);
+                })
             });
         });
     });
@@ -91,3 +87,18 @@ module.exports = function(apiRoutes){
     });
 
 };
+
+let getUserLists = (userid, accessToken) => {
+    return new Promise((resolve, reject) => {
+        List.find({
+            $or:[
+                { 'ownerid': userid },
+                { 'members.userid': userid }
+            ]
+        }, (err, lists) => {
+            listHelper.listModel(accessToken, lists, userid).then(model => {
+                resolve(model); 
+            });
+        });
+    });
+}
