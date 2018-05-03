@@ -32,11 +32,6 @@ let publicModel = (list, userid) => (
     }
 );
 
-let emojiByItemName = (itemdata, name) => {
-    let itemDataEmoji = itemdata.items.find(itemm => itemm.name.toLowerCase() === name.toLowerCase());
-    return itemDataEmoji ? itemDataEmoji.emoji : null;
-}
-
 let listModel = (auth0AccessToken, lists, thisUserid) => {
     return new Promise((resolve, reject) => {
         let memberUserIds = getListsMembers(lists);
@@ -53,20 +48,8 @@ let listModel = (auth0AccessToken, lists, thisUserid) => {
                     _id: list._id,
                     isowner: (list.ownerid === thisUserid),
                     name: list.name,
-                    items: list.items.map(item => {
-                        return {
-                            _id: item._id,
-                            name: item.name,
-                            emoji: emojiByItemName(itemdata, item.name)
-                        }
-                    }),
-                    members: list.members.map(member => {
-                        let auth0User = JSON.parse(auth0Users.find(u => JSON.parse(u).user_id === member.userid));
-                        return {
-                            userid: member.userid,
-                            picture: auth0User.picture,
-                        }
-                    })
+                    items: list.items.map(item => itemModel(item, itemdata)),
+                    members: list.members.map(member => memberModel(member, auth0Users))
                 };
             });
 
@@ -81,6 +64,27 @@ let getListsMembers = (lists) => {
         return index == self.indexOf(elem);
     });
 };
+
+let itemModel = (item, itemdata) => (
+    {
+        _id: item._id,
+        name: item.name,
+        emoji: emojiByItemName(itemdata, item.name)
+    }
+);
+
+let emojiByItemName = (itemdata, name) => {
+    let itemDataEmoji = itemdata.items.find(itemm => itemm.name.toLowerCase() === name.toLowerCase());
+    return itemDataEmoji ? itemDataEmoji.emoji : null;
+}
+
+let memberModel = (member, auth0Users) => {
+    let auth0User = JSON.parse(auth0Users.find(u => JSON.parse(u).user_id === member.userid));
+    return {
+        userid: member.userid,
+        picture: auth0User.picture,
+    };
+}
 
 module.exports = {
     getUserLists,
