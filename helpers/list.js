@@ -49,8 +49,6 @@ let listModel = (auth0AccessToken, lists, thisUserid) => {
 
             //Return all promises as success, even if auth0 could not find the user
             Promise.all(auth0UserPromises.map(p => p.catch(() => undefined))).then(auth0Users => {
-
-                console.log(auth0Users);
                 
                 var model = lists.map(list => {
                     return {
@@ -61,6 +59,8 @@ let listModel = (auth0AccessToken, lists, thisUserid) => {
                         members: list.members.map(member => memberModel(member, users, auth0Users))
                     };
                 });
+
+                console.log(model);
 
                 resolve(model);
             });
