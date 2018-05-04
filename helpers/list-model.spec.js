@@ -50,3 +50,43 @@ describe('List Model Helper - getListsMembers', function(){
     });
 
 });
+
+describe('List Model Helper - memberModel', function(){
+
+    it('does not return picture or displayname if auth0User and user isnt found', function(){
+
+        let member = { userid: 'foo' };
+        let users = [];
+        let auth0Users = [];
+        let ownerid = 'bar';
+
+        assert.deepEqual(
+            listModelHelper.memberModel(member, users, auth0Users, ownerid),
+            {
+                isowner: false,
+                displayname: undefined,
+                picture: undefined,
+                userid: 'foo'
+            }
+        );
+    });
+
+    it('returns isowner = true if userid matches owner', function(){
+
+        let member = { userid: 'foo' };
+        let users = [];
+        let auth0Users = [];
+        let ownerid = 'foo';
+
+        assert.deepEqual(
+            listModelHelper.memberModel(member, users, auth0Users, ownerid),
+            {
+                isowner: true,
+                displayname: undefined,
+                picture: undefined,
+                userid: 'foo'
+            }
+        );
+    });
+
+});
