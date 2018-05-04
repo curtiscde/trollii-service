@@ -4,10 +4,6 @@ var User = require('../models/user');
 
 var itemdata = require('../data/item');
 
-let hasUserListAccess = (list, userid) => (
-    !!list.members.filter(member => member.userid == userid).length
-)
-
 let listModel = (auth0AccessToken, lists, thisUserid) => {
     return new Promise((resolve, reject) => {
         let memberUserIds = getListsMembers(lists);
@@ -76,7 +72,6 @@ let memberModel = (member, users, auth0Users) => {
 }
 
 module.exports = {
-    hasUserListAccess,
     emojiByItemName,
     listModel,
     getListsMembers

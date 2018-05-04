@@ -5,7 +5,7 @@ var List = require('../models/list');
 var authJwt = require('../auth/jwt.js');
 
 var auth0Helper = require('../helpers/auth0');
-var listHelper = require('../helpers/list');
+var listModelHelper = require('../helpers/list-model');
 
 module.exports = function(apiRoutes){
 
@@ -90,7 +90,7 @@ let getUserLists = (userid, accessToken) => {
                 { 'members.userid': userid }
             ]
         }, (err, lists) => {
-            listHelper.listModel(accessToken, lists, userid).then(model => {
+            listModelHelper.listModel(accessToken, lists, userid).then(model => {
                 resolve(model); 
             });
         });

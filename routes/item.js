@@ -5,7 +5,8 @@ var List = require('../models/list');
 var authJwt = require('../auth/jwt.js');
 
 var auth0Helper = require('../helpers/auth0');
-var listHelper = require('../helpers/list');
+var listModelHelper = require('../helpers/list-model');
+var listAccessHelper = require('../helpers/list-access');
 
 module.exports = function(apiRoutes){
 
@@ -45,7 +46,7 @@ module.exports = function(apiRoutes){
                             });
                             list.save();
     
-                            listHelper.listModel(req.auth0AccessToken, [list]).then(model => res.json(model[0]));
+                            listModelHelper.listModel(req.auth0AccessToken, [list]).then(model => res.json(model[0]));
                         }      
 
                     });
@@ -73,7 +74,7 @@ module.exports = function(apiRoutes){
                 List.findById(req.params.listid, function(err, list){
                     list.items.remove({_id: req.params.itemid});
                     list.save();
-                    listHelper.listModel(req.auth0AccessToken, [list]).then(model => res.json(model[0]));
+                    listModelHelper.listModel(req.auth0AccessToken, [list]).then(model => res.json(model[0]));
                 });
 
             }
@@ -86,7 +87,7 @@ module.exports = function(apiRoutes){
 
 let checkUserHasListAccess = function(listid, userid, callback){
     List.findById(listid, function(err, list){
-        var hasAccess = listHelper.hasUserListAccess(list, userid);
+        var hasAccess = listAccessHelper.hasUserListAccess(list, userid);
         callback(err, hasAccess);
     });
 }
