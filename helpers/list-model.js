@@ -30,8 +30,6 @@ let listModel = (auth0AccessToken, lists, thisUserid) => {
                     };
                 });
 
-                console.log(model);
-
                 resolve(model);
             });
 
