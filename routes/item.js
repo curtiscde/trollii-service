@@ -46,7 +46,7 @@ module.exports = function(apiRoutes){
                             });
                             list.save();
     
-                            listModelHelper.listModel(req.auth0AccessToken, [list]).then(model => res.json(model[0]));
+                            listModelHelper.listModel(req.auth0AccessToken, [list], req.user.sub).then(model => res.json(model[0]));
                         }      
 
                     });
@@ -74,7 +74,7 @@ module.exports = function(apiRoutes){
                 List.findById(req.params.listid, function(err, list){
                     list.items.remove({_id: req.params.itemid});
                     list.save();
-                    listModelHelper.listModel(req.auth0AccessToken, [list]).then(model => res.json(model[0]));
+                    listModelHelper.listModel(req.auth0AccessToken, [list], req.user.sub).then(model => res.json(model[0]));
                 });
 
             }
