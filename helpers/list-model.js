@@ -4,36 +4,6 @@ var User = require('../models/user');
 
 var itemdata = require('../data/item');
 
-let getUserLists = (lists, userid) => (
-    lists.filter(function(list){
-        return hasUserListAccess(list, userid);
-    }).map(list => publicModel(list, userid))
-)
-
-let hasUserListAccess = (list, userid) => (
-    !!list.members.filter(member => member.userid == userid).length
-)
-
-let publicModel = (list, userid) => (
-    {
-        _id: list._id,
-        isowner: (list.ownerid === userid),
-        name: list.name,
-        items: list.items.map(item => {
-            return {
-                _id: item._id,
-                name: item.name,
-                emoji: emojiByItemName(itemdata, item.name)
-            }
-        }),
-        members: list.members.map(member => {
-            return {
-                userid: member.userid
-            }
-        })
-    }
-);
-
 let listModel = (auth0AccessToken, lists, thisUserid) => {
     return new Promise((resolve, reject) => {
         let memberUserIds = getListsMembers(lists);
@@ -49,8 +19,6 @@ let listModel = (auth0AccessToken, lists, thisUserid) => {
 
             //Return all promises as success, even if auth0 could not find the user
             Promise.all(auth0UserPromises.map(p => p.catch(() => undefined))).then(auth0Users => {
-
-                console.log(auth0Users);
                 
                 var model = lists.map(list => {
                     return {
@@ -102,9 +70,6 @@ let memberModel = (member, users, auth0Users) => {
 }
 
 module.exports = {
-    getUserLists,
-    hasUserListAccess,
-    publicModel,
     emojiByItemName,
     listModel,
     getListsMembers

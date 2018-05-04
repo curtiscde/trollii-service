@@ -4,11 +4,13 @@ var List = require('../models/list');
 
 var authJwt = require('../auth/jwt.js');
 
-var listHelper = require('../helpers/list');
+var auth0Helper = require('../helpers/auth0');
+var listModelHelper = require('../helpers/list-model');
+var listAccessHelper = require('../helpers/list-access');
 
 module.exports = function(apiRoutes){
 
-    apiRoutes.post('/item', authJwt.jwtCheck, function(req, res) {
+    apiRoutes.post('/item', authJwt.jwtCheck, auth0Helper.getAccessToken, function(req, res) {
 
         let userid = req.user.sub;
 
@@ -44,8 +46,7 @@ module.exports = function(apiRoutes){
                             });
                             list.save();
     
-                            res.json(listHelper.publicModel(list, userid));
-
+                            listModelHelper.listModel(req.auth0AccessToken, [list]).then(model => res.json(model[0]));
                         }      
 
                     });
@@ -58,7 +59,7 @@ module.exports = function(apiRoutes){
 
     });
 
-    apiRoutes.delete('/item/:listid/:itemid', authJwt.jwtCheck, function(req, res) {
+    apiRoutes.delete('/item/:listid/:itemid', authJwt.jwtCheck, auth0Helper.getAccessToken, function(req, res) {
        
         checkUserHasListAccess(req.params.listid, req.user.sub, function(err, hasAccess){
 
@@ -70,12 +71,10 @@ module.exports = function(apiRoutes){
             }
             else {
 
-                console.log('Access to remove');
-
                 List.findById(req.params.listid, function(err, list){
                     list.items.remove({_id: req.params.itemid});
                     list.save();
-                    res.json(listHelper.publicModel(list, req.user.sub));
+                    listModelHelper.listModel(req.auth0AccessToken, [list]).then(model => res.json(model[0]));
                 });
 
             }
@@ -86,9 +85,9 @@ module.exports = function(apiRoutes){
 
 }
 
-var checkUserHasListAccess = function(listid, userid, callback){
+let checkUserHasListAccess = function(listid, userid, callback){
     List.findById(listid, function(err, list){
-        var hasAccess = listHelper.hasUserListAccess(list, userid);
+        var hasAccess = listAccessHelper.hasUserListAccess(list, userid);
         callback(err, hasAccess);
     });
 }

@@ -5,20 +5,18 @@ var List = require('../models/list');
 var authJwt = require('../auth/jwt.js');
 
 var auth0Helper = require('../helpers/auth0');
-var listHelper = require('../helpers/list');
+var listModelHelper = require('../helpers/list-model');
 
 module.exports = function(apiRoutes){
 
     // get all lists
-    apiRoutes.get('/list', authJwt.jwtCheck, function(req, res) {
-        auth0Helper.getAccessToken().then(accessToken => {
-            getUserLists(req.user.sub, accessToken).then(model => {
-                res.json(model);
-            })
-        });
+    apiRoutes.get('/list', authJwt.jwtCheck, auth0Helper.getAccessToken, (req, res) => {
+        getUserLists(req.user.sub, req.auth0AccessToken).then(model => {
+            res.json(model);
+        })
     });
 
-    apiRoutes.post('/list', authJwt.jwtCheck, function(req, res) {
+    apiRoutes.post('/list', authJwt.jwtCheck, auth0Helper.getAccessToken, function(req, res) {
 
         if (!req.body.name){
             res.status(500).send({ error: 'Name cannot be blank' });
@@ -35,10 +33,8 @@ module.exports = function(apiRoutes){
                 if (err)
                     res.send(err);
 
-                auth0Helper.getAccessToken().then(accessToken => {
-                    getUserLists(req.user.sub, accessToken).then(model => {
-                        res.json(model);
-                    })
+                getUserLists(req.user.sub, req.auth0AccessToken).then(model => {
+                    res.json(model);
                 });
             });
 
@@ -46,7 +42,7 @@ module.exports = function(apiRoutes){
 
     });
 
-    apiRoutes.delete('/list/:list_id', authJwt.jwtCheck, function(req, res) {
+    apiRoutes.delete('/list/:list_id', authJwt.jwtCheck, auth0Helper.getAccessToken, function(req, res) {
 
         List.remove({
             _id : req.params.list_id,
@@ -55,11 +51,9 @@ module.exports = function(apiRoutes){
             if (err)
                 res.send(err);
 
-            auth0Helper.getAccessToken().then(accessToken => {
-                getUserLists(req.user.sub, accessToken).then(model => {
-                    res.json(model);
-                })
-            });
+            getUserLists(req.user.sub, req.auth0AccessToken).then(model => {
+                res.json(model);
+            })
         });
     });
 
@@ -96,7 +90,7 @@ let getUserLists = (userid, accessToken) => {
                 { 'members.userid': userid }
             ]
         }, (err, lists) => {
-            listHelper.listModel(accessToken, lists, userid).then(model => {
+            listModelHelper.listModel(accessToken, lists, userid).then(model => {
                 resolve(model); 
             });
         });
