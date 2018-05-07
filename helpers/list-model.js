@@ -25,7 +25,7 @@ let listModel = (auth0AccessToken, lists, thisUserid) => {
                         isowner: (list.ownerid === thisUserid),
                         name: list.name,
                         items: itemModelHelper.itemsModel(list.items),
-                        members: list.members.map(member => memberModel(member, users, auth0Users))
+                        members: list.members.map(member => memberModel(member, users, auth0Users, list.ownerid))
                     };
                 });
 
@@ -43,19 +43,21 @@ let getListsMembers = (lists) => {
     });
 };
 
-let memberModel = (member, users, auth0Users) => {
+let memberModel = (member, users, auth0Users, ownerid) => {
     
     let user = users.find(u => u.userid === member.userid);
     let auth0User = auth0Users.find(u => u && JSON.parse(u).user_id === member.userid);
     
     return {
-        userid: member.userid,
+        isowner: (ownerid === member.userid),
         displayname: user && user.displayname,
         picture: auth0User && JSON.parse(auth0User).picture,
+        userid: member.userid
     };
 }
 
 module.exports = {
     listModel,
-    getListsMembers
+    getListsMembers,
+    memberModel
 };
