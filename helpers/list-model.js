@@ -1,8 +1,7 @@
 var auth0Helper = require('./auth0');
+let itemModelHelper = require('./item-model');
 
 var User = require('../models/user');
-
-var itemdata = require('../data/item');
 
 let listModel = (auth0AccessToken, lists, thisUserid) => {
     return new Promise((resolve, reject) => {
@@ -25,7 +24,7 @@ let listModel = (auth0AccessToken, lists, thisUserid) => {
                         _id: list._id,
                         isowner: (list.ownerid === thisUserid),
                         name: list.name,
-                        items: list.items.map(item => itemModel(item, itemdata)),
+                        items: itemModelHelper.itemsModel(list.items),
                         members: list.members.map(member => memberModel(member, users, auth0Users, list.ownerid))
                     };
                 });
@@ -44,19 +43,6 @@ let getListsMembers = (lists) => {
     });
 };
 
-let itemModel = (item, itemdata) => (
-    {
-        _id: item._id,
-        name: item.name,
-        emoji: emojiByItemName(itemdata, item.name)
-    }
-);
-
-let emojiByItemName = (itemdata, name) => {
-    let itemDataEmoji = itemdata.items.find(itemm => itemm.name.toLowerCase() === name.toLowerCase());
-    return itemDataEmoji ? itemDataEmoji.emoji : null;
-}
-
 let memberModel = (member, users, auth0Users, ownerid) => {
     
     let user = users.find(u => u.userid === member.userid);
@@ -71,7 +57,6 @@ let memberModel = (member, users, auth0Users, ownerid) => {
 }
 
 module.exports = {
-    emojiByItemName,
     listModel,
     getListsMembers,
     memberModel

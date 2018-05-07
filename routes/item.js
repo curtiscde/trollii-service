@@ -7,10 +7,11 @@ var authJwt = require('../auth/jwt.js');
 var auth0Helper = require('../helpers/auth0');
 var listModelHelper = require('../helpers/list-model');
 var listAccessHelper = require('../helpers/list-access');
+let itemModelHelper = require('../helpers/item-model');
 
 module.exports = function(apiRoutes){
 
-    apiRoutes.post('/item', authJwt.jwtCheck, auth0Helper.getAccessToken, function(req, res) {
+    apiRoutes.post('/item', authJwt.jwtCheck, function(req, res) {
 
         let userid = req.user.sub;
 
@@ -45,8 +46,12 @@ module.exports = function(apiRoutes){
                                 date: new Date()
                             });
                             list.save();
+
+                            res.json({
+                                _id: list._id,
+                                items: itemModelHelper.itemsModel(list.items)
+                            });
     
-                            listModelHelper.listModel(req.auth0AccessToken, [list], req.user.sub).then(model => res.json(model[0]));
                         }      
 
                     });
@@ -59,7 +64,7 @@ module.exports = function(apiRoutes){
 
     });
 
-    apiRoutes.delete('/item/:listid/:itemid', authJwt.jwtCheck, auth0Helper.getAccessToken, function(req, res) {
+    apiRoutes.delete('/item/:listid/:itemid', authJwt.jwtCheck, (req, res) => {
        
         checkUserHasListAccess(req.params.listid, req.user.sub, function(err, hasAccess){
 
@@ -74,7 +79,10 @@ module.exports = function(apiRoutes){
                 List.findById(req.params.listid, function(err, list){
                     list.items.remove({_id: req.params.itemid});
                     list.save();
-                    listModelHelper.listModel(req.auth0AccessToken, [list], req.user.sub).then(model => res.json(model[0]));
+                    res.json({
+                        _id: list._id,
+                        items: itemModelHelper.itemsModel(list.items)
+                    });
                 });
 
             }
