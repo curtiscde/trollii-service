@@ -18,6 +18,7 @@ let emojiByItemName = (itemdata, name) => {
 }
 
 module.exports = {
-    emojiByItemName,
-    itemModel
+    itemsModel,
+    itemModel,
+    emojiByItemName
 };

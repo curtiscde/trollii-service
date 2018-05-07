@@ -3,8 +3,6 @@ let itemModelHelper = require('./item-model');
 
 var User = require('../models/user');
 
-var itemdata = require('../data/item');
-
 let listModel = (auth0AccessToken, lists, thisUserid) => {
     return new Promise((resolve, reject) => {
         let memberUserIds = getListsMembers(lists);
@@ -26,7 +24,7 @@ let listModel = (auth0AccessToken, lists, thisUserid) => {
                         _id: list._id,
                         isowner: (list.ownerid === thisUserid),
                         name: list.name,
-                        items: list.items.map(item => itemModelHelper.itemModel(item, itemdata)),
+                        items: itemModelHelper.itemsModel(list.items),
                         members: list.members.map(member => memberModel(member, users, auth0Users))
                     };
                 });
